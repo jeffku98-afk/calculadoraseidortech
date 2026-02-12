@@ -12,10 +12,12 @@ import {
 import { usePSTMicrosoftStore } from "@/lib/pst-microsoft-store";
 import { calcularTiempoPSTMicrosoft } from "@/lib/calcular-pst-microsoft";
 import { generarPDF, obtenerFechaActual } from "@/lib/generar-pdf";
+import { useSession } from "next-auth/react";
 
 export function PSTMicrosoftPage() {
   const state = usePSTMicrosoftStore();
   const resultado = calcularTiempoPSTMicrosoft(state);
+  const { data: session } = useSession();
 
   const handleDescargarPDF = async () => {
     await generarPDF({
@@ -25,6 +27,8 @@ export function PSTMicrosoftPage() {
       minutos: resultado.minutos,
       desglose: resultado.desglose,
       disclaimer: "Las horas operacionales corren desde la recepción del PST.",
+      userName: session?.user?.name ?? undefined,
+      userEmail: session?.user?.email ?? undefined,
     });
   };
 

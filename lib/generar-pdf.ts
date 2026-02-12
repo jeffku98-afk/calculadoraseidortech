@@ -14,6 +14,8 @@ interface DatosPDF {
   minutos: number;
   desglose: DetalleHoras[];
   disclaimer?: string;
+  userName?: string;      // ← NUEVO
+  userEmail?: string;     // ← NUEVO
 }
 
 // Función para convertir imagen a base64
@@ -235,16 +237,61 @@ export async function generarPDF(datos: DatosPDF) {
   }
 
   // ==========================================
-  // FOOTER
+  // PIE DE PÁGINA CON INFORMACIÓN DEL USUARIO
   // ==========================================
-  const footerY = pageHeight - 15;
-  doc.setTextColor(...colorGris);
+  
+  // Obtener información del usuario y fecha/hora de generación
+  const userName = datos.userName || "Usuario";
+  const userEmail = datos.userEmail || "";
+  const now = new Date();
+  const fecha = now.toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+  const hora = now.toLocaleTimeString("es-ES", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  // Ir a la última página del documento
+  const pageCount = doc.internal.pages.length - 1;
+  doc.setPage(pageCount);
+
+  // Posicionar en la parte inferior de la página
+  const footerY = pageHeight - 25;
+
+  // Dibujar línea separadora
+  doc.setDrawColor(200, 200, 200);
+  doc.setLineWidth(0.5);
+  doc.line(15, footerY, pageWidth - 15, footerY);
+
+  // Agregar información del usuario (centrado)
   doc.setFontSize(8);
   doc.setFont("helvetica", "italic");
+  doc.setTextColor(120, 120, 120);
+  doc.text(
+    `Documento generado por: ${userName}${userEmail ? ` (${userEmail})` : ""}`,
+    pageWidth / 2,
+    footerY + 5,
+    { align: "center" }
+  );
+  
+  // Agregar fecha y hora de generación
+  doc.text(
+    `Fecha de generación: ${fecha} a las ${hora}`,
+    pageWidth / 2,
+    footerY + 10,
+    { align: "center" }
+  );
+
+  // Texto SEIDOR en el pie (mantener el footer original más abajo)
+  doc.setFontSize(7);
+  doc.setTextColor(...colorGris);
   doc.text(
     "Este documento ha sido generado automáticamente por la Calculadora de Horas de SEIDOR",
     pageWidth / 2,
-    footerY,
+    pageHeight - 8,
     { align: "center" }
   );
 

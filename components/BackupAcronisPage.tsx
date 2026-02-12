@@ -15,10 +15,12 @@ import {
 import { useBackupAcronisStore } from "@/lib/backup-acronis-store";
 import { calcularTiempoBackupAcronis } from "@/lib/calcular-backup-acronis";
 import { generarPDF, obtenerFechaActual } from "@/lib/generar-pdf";
+import { useSession } from "next-auth/react";
 
 export function BackupAcronisPage() {
   const state = useBackupAcronisStore();
   const resultado = calcularTiempoBackupAcronis(state);
+  const { data: session } = useSession();
 
   const handleDescargarPDF = async () => {
     await generarPDF({
@@ -28,6 +30,8 @@ export function BackupAcronisPage() {
       minutos: resultado.minutos,
       desglose: resultado.desglose,
       disclaimer: "*El tiempo de sincronización para poder visualizar las cuentas en Acronis, dependerá de la cantidad de usuarios que se tenga en su tenant.",
+      userName: session?.user?.name ?? undefined,
+      userEmail: session?.user?.email ?? undefined,
     });
   };
 

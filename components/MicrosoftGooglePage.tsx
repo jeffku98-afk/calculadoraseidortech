@@ -14,10 +14,12 @@ import {
 import { useMicrosoftGoogleStore } from "@/lib/microsoft-google-store";
 import { calcularTiempoMicrosoftGoogle } from "@/lib/calcular-microsoft-google";
 import { generarPDF, obtenerFechaActual } from "@/lib/generar-pdf";
+import { useSession } from "next-auth/react"; 
 
 export function MicrosoftGooglePage() {
   const state = useMicrosoftGoogleStore();
   const resultado = calcularTiempoMicrosoftGoogle(state);
+  const { data: session } = useSession();
 
   const handleDescargarPDF = async () => {
     await generarPDF({
@@ -27,6 +29,8 @@ export function MicrosoftGooglePage() {
       minutos: resultado.minutos,
       desglose: resultado.desglose,
       disclaimer: "El proceso es gradual y puede tardar días o semanas en buzones muy grandes. Para buzones pequeños (5 - 20 GB): 1 a 2 días, para buzones medianos (20 - 50 GB): 2 a 4 días, y para buzones grandes (100 GB a más): 5 a 10 días.",
+      userName: session?.user?.name ?? undefined,
+      userEmail: session?.user?.email ?? undefined,
     });
   };
 

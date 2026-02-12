@@ -14,10 +14,12 @@ import {
 import { useTenantNuevoStore } from "@/lib/tenant-nuevo-store";
 import { calcularTiempoTenantNuevo } from "@/lib/calcular-tiempo";
 import { generarPDF, obtenerFechaActual } from "@/lib/generar-pdf";
+import { useSession } from "next-auth/react";
 
 export function TenantNuevoPage() {
   const state = useTenantNuevoStore();
   const resultado = calcularTiempoTenantNuevo(state);
+  const { data: session } = useSession();
 
   const handleDescargarPDF = async () => {
     await generarPDF({
@@ -26,6 +28,8 @@ export function TenantNuevoPage() {
       horas: resultado.horas,
       minutos: resultado.minutos,
       desglose: resultado.desglose,
+      userName: session?.user?.name ?? undefined,
+      userEmail: session?.user?.email ?? undefined,
     });
   };
 
