@@ -1,6 +1,5 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy Node.js app to Azure Web App - calculadoraseidortech
 
 on:
@@ -13,36 +12,54 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
-
+      contents: read
+    
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
-
-      - name: npm install, build, and test
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Build application
+        run: npm run build
+      
+      - name: Create standalone deployment package
         run: |
-          npm install
-          npm run build --if-present
-          npm run test --if-present
-
+          mkdir -p standalone
+          cp -r .next standalone/.next
+          cp -r node_modules standalone/node_modules
+          cp -r public standalone/public
+          cp -r components standalone/components
+          cp -r app standalone/app
+          cp -r lib standalone/lib
+          cp package.json standalone/package.json
+          cp package-lock.json standalone/package-lock.json
+          cp next.config.js standalone/next.config.js
+          cp tsconfig.json standalone/tsconfig.json
+          
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
-          include-hidden-files: true
-
+          path: standalone
+          
   deploy:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
-
+      id-token: write
+      contents: read
+      
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+      
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
@@ -55,7 +72,7 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_71C3C6C970A3460C8F4F1FC01CF47BF5 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7508DF614162420C86A5CC7B757A650C }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EC8937ACC82D45A7BAF0B720D4C8A24F }}
-
+          
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
@@ -65,3 +82,4 @@ jobs:
           package: .
 
           
+
