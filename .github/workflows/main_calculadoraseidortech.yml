@@ -34,7 +34,6 @@ jobs:
         with:
           name: node-app
           path: .
-          include-hidden-files: true
 
   deploy:
     runs-on: ubuntu-latest
@@ -52,9 +51,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_65773CF7C7BC4F7BA45B137C09751F28 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_6EE3B64A9CD444919796BB8D19097E8B }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_8845789DE57B4D7AA8BE4F6DA21C9832 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_71C3C6C970A3460C8F4F1FC01CF47BF5 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7508DF614162420C86A5CC7B757A650C }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_EC8937ACC82D45A7BAF0B720D4C8A24F }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
@@ -63,5 +62,4 @@ jobs:
           app-name: 'calculadoraseidortech'
           slot-name: 'Production'
           package: .
-
           
