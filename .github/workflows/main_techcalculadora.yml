@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: next.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,5 +51,9 @@ jobs:
         with:
           app-name: 'techcalculadora'
           slot-name: 'Production'
-          package: .
+          package: next.zip
+
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_52D1AB393F464B0A827DDCF552A4F5A7 }}
+          
+      - name: Delete zip file
+        run: rm next.zip
