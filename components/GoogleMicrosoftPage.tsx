@@ -10,6 +10,11 @@ import {
   Radio,
   Button,
   Divider,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "@nextui-org/react";
 import { useGoogleMicrosoftStore } from "@/lib/google-microsoft-store";
 import { calcularTiempoGoogleMicrosoft } from "@/lib/calcular-google-microsoft";
@@ -28,10 +33,35 @@ export function GoogleMicrosoftPage() {
       horas: resultado.horas,
       minutos: resultado.minutos,
       desglose: resultado.desglose,
-      disclaimer: "El proceso es gradual y puede tardar días o semanas en buzones muy grandes. Para buzones pequeños (5 - 20 GB): 1 a 2 días, para buzones medianos (20 - 50 GB): 2 a 4 días, y para buzones grandes (100 GB a más): 5 a 10 días.",
+      disclaimer:
+        "El proceso es gradual y puede tardar días o semanas en buzones muy grandes. Para buzones pequeños (5 - 20 GB): 1 a 2 días, para buzones medianos (20 - 50 GB): 2 a 4 días, y para buzones grandes (100 GB a más): 5 a 10 días.",
       userName: session?.user?.name ?? undefined,
       userEmail: session?.user?.email ?? undefined,
     });
+  };
+
+  // Handler para mostrar advertencia antes de activar reglas
+  const handleToggleReglas = (value: boolean) => {
+    if (value && !state.crearReglas) {
+      // Mostrar modal de advertencia
+      state.setMostrarAdvertenciaReglas(true);
+    } else {
+      // Desactivar directamente
+      state.setCrearReglas(false);
+      state.setCantidadReglas(0);
+    }
+  };
+
+  // Handler para confirmar creación de reglas
+  const handleConfirmarReglas = () => {
+    state.setCrearReglas(true);
+    state.setMostrarAdvertenciaReglas(false);
+  };
+
+  // Handler para cancelar creación de reglas
+  const handleCancelarReglas = () => {
+    state.setCrearReglas(false);
+    state.setMostrarAdvertenciaReglas(false);
   };
 
   return (
@@ -77,7 +107,7 @@ export function GoogleMicrosoftPage() {
                   state.setPanel(value as "crear" | "existente")
                 }
               >
-                <Radio value="crear" description="3 horas de operación">
+                <Radio value="crear" description="2 horas de operación">
                   Crear
                 </Radio>
                 <Radio value="existente" description="1 hora de operación">
@@ -109,6 +139,7 @@ export function GoogleMicrosoftPage() {
                   state.setCantidadDominios(parseInt(value) || 0)
                 }
                 min={0}
+                className="max-w-xs"
                 description={
                   state.cantidadDominios > 0
                     ? `${state.cantidadDominios} ${
@@ -120,12 +151,12 @@ export function GoogleMicrosoftPage() {
             </CardBody>
           </Card>
 
-          {/* 3. USUARIOS */}
+          {/* 3. USUARIOS - RENOMBRADO */}
           <Card>
             <CardHeader className="pb-3">
               <div>
                 <h3 className="text-lg font-semibold text-seidor-400">
-                  Usuarios
+                  Crear usuarios y asignar licencias
                 </h3>
                 <p className="text-sm text-seidor-500">
                   5 minutos por cada usuario
@@ -142,6 +173,7 @@ export function GoogleMicrosoftPage() {
                   state.setCantidadUsuarios(parseInt(value) || 0)
                 }
                 min={0}
+                className="max-w-xs"
                 description={
                   state.cantidadUsuarios > 0
                     ? `${state.cantidadUsuarios * 5} minutos total`
@@ -159,7 +191,7 @@ export function GoogleMicrosoftPage() {
                   Configuración de Tenant
                 </h3>
                 <p className="text-sm text-seidor-500">
-                  Selecciona el tipo de configuración
+                  Selecciona el método de configuración
                 </p>
               </div>
             </CardHeader>
@@ -167,50 +199,28 @@ export function GoogleMicrosoftPage() {
               <RadioGroup
                 value={state.configuracionTenant}
                 onValueChange={(value) =>
-                  state.setConfiguracionTenant(value as "google" | "microsoft")
+                  state.setConfiguracionTenant(value as "bittitan" | "nativa")
                 }
               >
-                <Radio value="google" description="3 horas de operación">
-                  Google
+                <Radio value="bittitan">
+                  <div>
+                    <p className="font-semibold text-seidor-400">BitTitan</p>
+                    <p className="text-sm text-seidor-500">13 horas</p>
+                    <p className="text-xs text-seidor-400 mt-1">
+                      Configurar Google: 3 horas - Configurar Microsoft: 10 horas
+                    </p>
+                  </div>
                 </Radio>
-                <Radio value="microsoft" description="10 horas de operación">
-                  Microsoft
+                <Radio value="nativa">
+                  <div>
+                    <p className="font-semibold text-seidor-400">Nativa</p>
+                    <p className="text-sm text-seidor-500">Horas por definir...</p>
+                    <p className="text-xs text-seidor-400 mt-1 italic">
+                      Tiempo a determinar según configuración específica
+                    </p>
+                  </div>
                 </Radio>
               </RadioGroup>
-            </CardBody>
-          </Card>
-
-          {/* 5. CONFIGURACIÓN DE BITTITAN */}
-          <Card>
-            <CardHeader className="pb-3">
-              <div>
-                <h3 className="text-lg font-semibold text-seidor-400">
-                  Configuración de BitTitan
-                </h3>
-                <p className="text-sm text-seidor-500">
-                  Selecciona los servicios a migrar
-                </p>
-              </div>
-            </CardHeader>
-            <CardBody className="space-y-3">
-              <Switch
-                isSelected={state.mailbox}
-                onValueChange={state.setMailbox}
-              >
-                <div>
-                  <p className="font-semibold text-seidor-400">Mailbox</p>
-                  <p className="text-sm text-seidor-500">5 horas</p>
-                </div>
-              </Switch>
-              <Switch
-                isSelected={state.onedrive}
-                onValueChange={state.setOnedrive}
-              >
-                <div>
-                  <p className="font-semibold text-seidor-400">OneDrive</p>
-                  <p className="text-sm text-seidor-500">5 horas</p>
-                </div>
-              </Switch>
             </CardBody>
           </Card>
 
@@ -227,55 +237,82 @@ export function GoogleMicrosoftPage() {
               </div>
             </CardHeader>
             <CardBody className="space-y-4">
-              {/* SEGURIDAD */}
+              {/* SEGURIDAD - MODIFICADO */}
               <div className="space-y-3">
                 <h3 className="text-md font-semibold text-seidor-400">
                   Seguridad
                 </h3>
                 <div className="bg-seidor-50 p-4 rounded-lg space-y-3">
-                  <Switch
-                    size="sm"
-                    isSelected={state.listaBlancaNegra}
-                    onValueChange={state.setListaBlancaNegra}
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-seidor-400">
-                        Creación de Lista Blanca y/o Lista Negra
-                      </p>
-                      <p className="text-xs text-seidor-500">2 horas</p>
-                    </div>
-                  </Switch>
-
+                  {/* Listas Blanca/Negra - MODIFICADO */}
                   <div className="space-y-2">
                     <Switch
                       size="sm"
-                      isSelected={state.bloqueoIPs}
-                      onValueChange={state.setBloqueoIPs}
+                      isSelected={state.listasBlancaNegra}
+                      onValueChange={state.setListasBlancaNegra}
                     >
                       <div>
                         <p className="text-sm font-medium text-seidor-400">
-                          Bloqueo de IPs
+                          Creación de lista blanca/lista negra
                         </p>
                         <p className="text-xs text-seidor-500">
-                          5 minutos por IP
+                          Cuentas, dominios e IPs - 1 minuto por dominio
                         </p>
                       </div>
                     </Switch>
-                    {state.bloqueoIPs && (
+                    {state.listasBlancaNegra && (
                       <Input
                         size="sm"
                         type="number"
-                        label="Cantidad de IPs a bloquear"
+                        label="Cantidad de dominios"
                         placeholder="Ej: 10"
-                        value={state.cantidadIPs.toString()}
+                        value={state.cantidadDominiosListas.toString()}
                         onValueChange={(value) =>
-                          state.setCantidadIPs(parseInt(value) || 0)
+                          state.setCantidadDominiosListas(parseInt(value) || 0)
                         }
                         min={0}
-                        className="ml-6"
+                        className="ml-6 max-w-xs"
                         description={
-                          state.cantidadIPs > 0
-                            ? `${state.cantidadIPs * 5} minutos total`
+                          state.cantidadDominiosListas > 0
+                            ? `${state.cantidadDominiosListas} minutos total`
+                            : ""
+                        }
+                      />
+                    )}
+                  </div>
+
+                  {/* Listas de Distribución - NUEVO */}
+                  <div className="space-y-2">
+                    <Switch
+                      size="sm"
+                      isSelected={state.listasDistribucion}
+                      onValueChange={state.setListasDistribucion}
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-seidor-400">
+                          Listas de distribución
+                        </p>
+                        <p className="text-xs text-seidor-500">
+                          15 minutos por lista
+                        </p>
+                      </div>
+                    </Switch>
+                    {state.listasDistribucion && (
+                      <Input
+                        size="sm"
+                        type="number"
+                        label="Cantidad de listas"
+                        placeholder="Ej: 5"
+                        value={state.cantidadListasDistribucion.toString()}
+                        onValueChange={(value) =>
+                          state.setCantidadListasDistribucion(
+                            parseInt(value) || 0
+                          )
+                        }
+                        min={0}
+                        className="ml-6 max-w-xs"
+                        description={
+                          state.cantidadListasDistribucion > 0
+                            ? `${state.cantidadListasDistribucion * 15} minutos total`
                             : ""
                         }
                       />
@@ -286,11 +323,11 @@ export function GoogleMicrosoftPage() {
 
               <Divider />
 
-              {/* CREACIÓN DE REGLAS */}
+              {/* CREACIÓN DE REGLAS - CON ADVERTENCIA */}
               <div>
                 <Switch
                   isSelected={state.crearReglas}
-                  onValueChange={state.setCrearReglas}
+                  onValueChange={handleToggleReglas}
                 >
                   <div>
                     <p className="font-semibold text-seidor-400">
@@ -313,6 +350,7 @@ export function GoogleMicrosoftPage() {
                         state.setCantidadReglas(parseInt(value) || 0)
                       }
                       min={0}
+                      className="max-w-xs"
                       description={
                         state.cantidadReglas > 0
                           ? `${state.cantidadReglas * 15} minutos total`
@@ -331,37 +369,11 @@ export function GoogleMicrosoftPage() {
               <div>
                 <h2 className="text-xl font-bold">Almacenamiento</h2>
                 <p className="text-sm opacity-90">
-                  Configuración de licencias y políticas
+                  Configuración de políticas de retención y archivado
                 </p>
               </div>
             </CardHeader>
             <CardBody className="space-y-4">
-              {/* LICENCIA TENANT */}
-              <div>
-                <h3 className="text-md font-semibold text-seidor-400 mb-3">
-                  Licencia del Tenant
-                </h3>
-                <RadioGroup
-                  value={state.licenciaTenant}
-                  onValueChange={(value) =>
-                    state.setLicenciaTenant(value as "estandar" | "premium")
-                  }
-                >
-                  <Radio value="estandar">Estándar</Radio>
-                  <Radio value="premium">
-                    <div className="flex items-center gap-2">
-                      <span>Premium</span>
-                      <span className="text-xs bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-2 py-0.5 rounded-full font-semibold">
-                        Premium
-                      </span>
-                    </div>
-                  </Radio>
-                </RadioGroup>
-              </div>
-
-              <Divider />
-
-              {/* OPCIONES ESTÁNDAR */}
               <div className="space-y-3">
                 <h3 className="text-md font-semibold text-seidor-400">
                   Opciones de Retención
@@ -380,6 +392,7 @@ export function GoogleMicrosoftPage() {
                     </div>
                   </Switch>
 
+                  {/* RENOMBRADO: Asignar políticas de retención */}
                   <div className="space-y-2">
                     <Switch
                       size="sm"
@@ -388,7 +401,7 @@ export function GoogleMicrosoftPage() {
                     >
                       <div>
                         <p className="text-sm font-medium text-seidor-400">
-                          Políticas de retención
+                          Asignar políticas de retención
                         </p>
                         <p className="text-xs text-seidor-500">
                           5 minutos por usuario
@@ -408,7 +421,7 @@ export function GoogleMicrosoftPage() {
                           )
                         }
                         min={0}
-                        className="ml-6"
+                        className="ml-6 max-w-xs"
                         description={
                           state.usuariosPoliticasRetencion > 0
                             ? `${state.usuariosPoliticasRetencion * 5} minutos total`
@@ -444,7 +457,7 @@ export function GoogleMicrosoftPage() {
                           state.setUsuariosArchivado(parseInt(value) || 0)
                         }
                         min={0}
-                        className="ml-6"
+                        className="ml-6 max-w-xs"
                         description={
                           state.usuariosArchivado > 0
                             ? `${state.usuariosArchivado * 5} minutos total`
@@ -453,62 +466,111 @@ export function GoogleMicrosoftPage() {
                       />
                     )}
                   </div>
+
+                  <div className="space-y-2">
+                    <Switch
+                      size="sm"
+                      isSelected={state.autoExpandingArchivado}
+                      onValueChange={state.setAutoExpandingArchivado}
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-seidor-400">
+                          Auto-expanding archivado
+                        </p>
+                        <p className="text-xs text-seidor-500">
+                          5 minutos por usuario
+                        </p>
+                      </div>
+                    </Switch>
+                    {state.autoExpandingArchivado && (
+                      <Input
+                        size="sm"
+                        type="number"
+                        label="Cantidad de usuarios"
+                        placeholder="Ej: 30"
+                        value={state.usuariosAutoExpanding.toString()}
+                        onValueChange={(value) =>
+                          state.setUsuariosAutoExpanding(parseInt(value) || 0)
+                        }
+                        min={0}
+                        className="ml-6 max-w-xs"
+                        description={
+                          state.usuariosAutoExpanding > 0
+                            ? `${state.usuariosAutoExpanding * 5} minutos total`
+                            : ""
+                        }
+                      />
+                    )}
+                  </div>
+
+                  {/* FORZAR ARCHIVADO - NUEVO */}
+                  <div className="space-y-2">
+                    <Switch
+                      size="sm"
+                      isSelected={state.forzarArchivado}
+                      onValueChange={state.setForzarArchivado}
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-seidor-400">
+                          Forzar archivado
+                        </p>
+                        <p className="text-xs text-seidor-500">
+                          1 minuto por usuario
+                        </p>
+                      </div>
+                    </Switch>
+                    {state.forzarArchivado && (
+                      <Input
+                        size="sm"
+                        type="number"
+                        label="Cantidad de usuarios"
+                        placeholder="Ej: 30"
+                        value={state.usuariosForzarArchivado.toString()}
+                        onValueChange={(value) =>
+                          state.setUsuariosForzarArchivado(parseInt(value) || 0)
+                        }
+                        min={0}
+                        className="ml-6 max-w-xs"
+                        description={
+                          state.usuariosForzarArchivado > 0
+                            ? `${state.usuariosForzarArchivado} minutos total`
+                            : ""
+                        }
+                      />
+                    )}
+                  </div>
                 </div>
               </div>
+            </CardBody>
+          </Card>
 
-              {/* OPCIONES PREMIUM */}
-              {state.licenciaTenant === "premium" && (
-                <>
-                  <Divider />
-                  <div className="border-l-4 border-yellow-500 pl-4 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-md font-semibold text-seidor-400">
-                        Opciones Premium
-                      </h3>
-                      <span className="text-xs bg-gradient-to-r from-yellow-400 to-yellow-600 text-white px-2 py-0.5 rounded-full font-semibold">
-                        Premium
-                      </span>
-                    </div>
-                    <div className="bg-yellow-50 p-4 rounded-lg space-y-2">
-                      <Switch
-                        size="sm"
-                        isSelected={state.autoExpandingArchivado}
-                        onValueChange={state.setAutoExpandingArchivado}
-                      >
-                        <div>
-                          <p className="text-sm font-medium text-seidor-400">
-                            Auto-expanding archivado
-                          </p>
-                          <p className="text-xs text-seidor-500">
-                            5 minutos por usuario
-                          </p>
-                        </div>
-                      </Switch>
-                      {state.autoExpandingArchivado && (
-                        <Input
-                          size="sm"
-                          type="number"
-                          label="Cantidad de usuarios"
-                          placeholder="Ej: 30"
-                          value={state.usuariosAutoExpanding.toString()}
-                          onValueChange={(value) =>
-                            state.setUsuariosAutoExpanding(
-                              parseInt(value) || 0
-                            )
-                          }
-                          min={0}
-                          className="ml-6"
-                          description={
-                            state.usuariosAutoExpanding > 0
-                              ? `${state.usuariosAutoExpanding * 5} minutos total`
-                              : ""
-                          }
-                        />
-                      )}
-                    </div>
-                  </div>
-                </>
-              )}
+          {/* MONITOREO DE USUARIOS */}
+          <Card>
+            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
+              <div>
+                <h2 className="text-xl font-bold">Monitoreo de Usuarios</h2>
+                <p className="text-sm opacity-90">
+                  15 minutos por cada usuario monitoreado
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <Input
+                type="number"
+                label="Cantidad de usuarios a monitorear"
+                placeholder="Ej: 50"
+                value={state.monitoreoUsuarios.toString()}
+                onValueChange={(value) =>
+                  state.setMonitoreoUsuarios(parseInt(value) || 0)
+                }
+                min={0}
+                className="max-w-xs"
+                description={
+                  state.monitoreoUsuarios > 0
+                    ? `${state.monitoreoUsuarios * 15} minutos total`
+                    : ""
+                }
+              />
             </CardBody>
           </Card>
 
@@ -603,9 +665,7 @@ export function GoogleMicrosoftPage() {
               </CardHeader>
               <CardBody>
                 <div className="text-center py-6">
-                  <div className="text-5xl font-bold mb-2">
-                    {resultado.horas}
-                  </div>
+                  <div className="text-5xl font-bold mb-2">{resultado.horas}</div>
                   <div className="text-xl mb-1">
                     {resultado.horas === 1 ? "hora" : "horas"}
                   </div>
@@ -646,6 +706,62 @@ export function GoogleMicrosoftPage() {
           </div>
         </div>
       </div>
+
+      {/* MODAL DE ADVERTENCIA PARA REGLAS */}
+      <Modal
+        isOpen={state.mostrarAdvertenciaReglas}
+        onClose={handleCancelarReglas}
+        size="lg"
+      >
+        <ModalContent>
+          <ModalHeader className="flex items-center gap-2">
+            <svg
+              className="w-6 h-6 text-amber-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <span>Advertencia - Creación de Reglas</span>
+          </ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              <p className="text-gray-700 leading-relaxed">
+                Antes de habilitar la <strong>Creación de Reglas</strong>, tener
+                en cuenta que esta opción puede tener riesgos, tales como:
+              </p>
+              <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+                <p className="text-amber-900 font-medium">
+                  ⚠️ Forward de información sensible a usuario homónimo o no
+                  autorizado
+                </p>
+              </div>
+              <p className="text-sm text-gray-600">
+                Asegúrese de revisar todas las reglas antes de aplicarlas y
+                verifique que los destinatarios sean correctos.
+              </p>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="danger"
+              variant="flat"
+              onPress={handleCancelarReglas}
+            >
+              Cancelar
+            </Button>
+            <Button color="warning" onPress={handleConfirmarReglas}>
+              Aceptar y continuar
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

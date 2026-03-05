@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type MenuItem = "nuevo-tenant" | "migracion" | "backup-acronis";
+export type MenuItem = "nuevo-tenant" | "migracion" | "backup-acronis" | "tiempo-migracion" | "configuracion-tenant";
 export type MigrationType =
   | "google-microsoft"
   | "microsoft-google"

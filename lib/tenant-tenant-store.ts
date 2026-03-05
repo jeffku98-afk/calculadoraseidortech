@@ -10,41 +10,45 @@ export interface TenantTenantState {
   // Usuarios
   cantidadUsuarios: number;
   
-  // Sitios de SharePoint
+  // Sitios de SharePoint (ÚNICA DE ESTE MÓDULO - NO TOCAR)
   sitiosSharepoint: boolean;
   cantidadSitios: number;
   configuracionPermisos: boolean;
   usuariosPorSitio: number;
-  pesoTotalTB: number;
   
   // CONFIGURACIONES ADICIONALES
-  // Seguridad
-  listaBlancaNegra: boolean;
+  // Seguridad - MODIFICADO
+  listasBlancaNegra: boolean;
+  cantidadDominiosListas: number; // NUEVO: 1 min por dominio
+  listasDistribucion: boolean; // NUEVO
+  cantidadListasDistribucion: number; // NUEVO: 15 min por lista
   bloqueoIPs: boolean;
   cantidadIPs: number;
   
   // Reglas
   crearReglas: boolean;
   cantidadReglas: number;
+  mostrarAdvertenciaReglas: boolean; // NUEVO: Para el modal
   
-  // Herramientas
+  // Herramientas (ÚNICA DE ESTE MÓDULO - NO TOCAR)
   herramientaNativa: boolean;
   usarShareGate: boolean;
   
-  // ALMACENAMIENTO
-  // Licencia
-  licenciaTenant: "estandar" | "premium";
-  
-  // Opciones Estándar
+  // ALMACENAMIENTO - SIN LICENCIAS (como Google→Microsoft y Microsoft→Google)
+  // Opciones de Retención y Archivado
   crearPoliticasRetencion: boolean;
   politicasRetencion: boolean;
   usuariosPoliticasRetencion: number;
   habilitarArchivado: boolean;
   usuariosArchivado: number;
   
-  // Opciones Premium
+  // Auto-expanding archivado (siempre disponible)
   autoExpandingArchivado: boolean;
   usuariosAutoExpanding: number;
+  
+  // Forzar archivado - NUEVO
+  forzarArchivado: boolean;
+  usuariosForzarArchivado: number;
 }
 
 interface TenantTenantActions {
@@ -55,15 +59,17 @@ interface TenantTenantActions {
   setCantidadSitios: (cantidad: number) => void;
   setConfiguracionPermisos: (activo: boolean) => void;
   setUsuariosPorSitio: (cantidad: number) => void;
-  setPesoTotalTB: (peso: number) => void;
-  setListaBlancaNegra: (activo: boolean) => void;
+  setListasBlancaNegra: (activo: boolean) => void;
+  setCantidadDominiosListas: (cantidad: number) => void; // NUEVO
+  setListasDistribucion: (activo: boolean) => void; // NUEVO
+  setCantidadListasDistribucion: (cantidad: number) => void; // NUEVO
   setBloqueoIPs: (activo: boolean) => void;
   setCantidadIPs: (cantidad: number) => void;
   setCrearReglas: (crear: boolean) => void;
   setCantidadReglas: (cantidad: number) => void;
+  setMostrarAdvertenciaReglas: (mostrar: boolean) => void; // NUEVO
   setHerramientaNativa: (activo: boolean) => void;
   setUsarShareGate: (activo: boolean) => void;
-  setLicenciaTenant: (licencia: "estandar" | "premium") => void;
   setCrearPoliticasRetencion: (crear: boolean) => void;
   setPoliticasRetencion: (activo: boolean) => void;
   setUsuariosPoliticasRetencion: (cantidad: number) => void;
@@ -71,6 +77,8 @@ interface TenantTenantActions {
   setUsuariosArchivado: (cantidad: number) => void;
   setAutoExpandingArchivado: (activo: boolean) => void;
   setUsuariosAutoExpanding: (cantidad: number) => void;
+  setForzarArchivado: (activo: boolean) => void; // NUEVO
+  setUsuariosForzarArchivado: (cantidad: number) => void; // NUEVO
   reset: () => void;
 }
 
@@ -82,15 +90,17 @@ const initialState: TenantTenantState = {
   cantidadSitios: 0,
   configuracionPermisos: false,
   usuariosPorSitio: 0,
-  pesoTotalTB: 0,
-  listaBlancaNegra: false,
+  listasBlancaNegra: false,
+  cantidadDominiosListas: 0, // NUEVO
+  listasDistribucion: false, // NUEVO
+  cantidadListasDistribucion: 0, // NUEVO
   bloqueoIPs: false,
   cantidadIPs: 0,
   crearReglas: false,
   cantidadReglas: 0,
+  mostrarAdvertenciaReglas: false, // NUEVO
   herramientaNativa: false,
   usarShareGate: false,
-  licenciaTenant: "estandar",
   crearPoliticasRetencion: false,
   politicasRetencion: false,
   usuariosPoliticasRetencion: 0,
@@ -98,6 +108,8 @@ const initialState: TenantTenantState = {
   usuariosArchivado: 0,
   autoExpandingArchivado: false,
   usuariosAutoExpanding: 0,
+  forzarArchivado: false, // NUEVO
+  usuariosForzarArchivado: 0, // NUEVO
 };
 
 export const useTenantTenantStore = create<
@@ -112,15 +124,17 @@ export const useTenantTenantStore = create<
   setCantidadSitios: (cantidadSitios) => set({ cantidadSitios }),
   setConfiguracionPermisos: (configuracionPermisos) => set({ configuracionPermisos }),
   setUsuariosPorSitio: (usuariosPorSitio) => set({ usuariosPorSitio }),
-  setPesoTotalTB: (pesoTotalTB) => set({ pesoTotalTB }),
-  setListaBlancaNegra: (listaBlancaNegra) => set({ listaBlancaNegra }),
+  setListasBlancaNegra: (listasBlancaNegra) => set({ listasBlancaNegra }),
+  setCantidadDominiosListas: (cantidadDominiosListas) => set({ cantidadDominiosListas }), // NUEVO
+  setListasDistribucion: (listasDistribucion) => set({ listasDistribucion }), // NUEVO
+  setCantidadListasDistribucion: (cantidadListasDistribucion) => set({ cantidadListasDistribucion }), // NUEVO
   setBloqueoIPs: (bloqueoIPs) => set({ bloqueoIPs }),
   setCantidadIPs: (cantidadIPs) => set({ cantidadIPs }),
   setCrearReglas: (crearReglas) => set({ crearReglas }),
   setCantidadReglas: (cantidadReglas) => set({ cantidadReglas }),
+  setMostrarAdvertenciaReglas: (mostrarAdvertenciaReglas) => set({ mostrarAdvertenciaReglas }), // NUEVO
   setHerramientaNativa: (herramientaNativa) => set({ herramientaNativa }),
   setUsarShareGate: (usarShareGate) => set({ usarShareGate }),
-  setLicenciaTenant: (licenciaTenant) => set({ licenciaTenant }),
   setCrearPoliticasRetencion: (crearPoliticasRetencion) =>
     set({ crearPoliticasRetencion }),
   setPoliticasRetencion: (politicasRetencion) => set({ politicasRetencion }),
@@ -132,5 +146,7 @@ export const useTenantTenantStore = create<
     set({ autoExpandingArchivado }),
   setUsuariosAutoExpanding: (usuariosAutoExpanding) =>
     set({ usuariosAutoExpanding }),
+  setForzarArchivado: (forzarArchivado) => set({ forzarArchivado }), // NUEVO
+  setUsuariosForzarArchivado: (usuariosForzarArchivado) => set({ usuariosForzarArchivado }), // NUEVO
   reset: () => set(initialState),
 }));

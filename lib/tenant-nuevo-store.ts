@@ -1,58 +1,54 @@
 import { create } from "zustand";
 
 export interface TenantNuevoState {
-  // Tarea
-  tarea: "creacion" | "existente";
+  // Tarea (solo muestra, siempre es creación con 2h fijas)
+  tarea: "creacion";
   
-  // Cantidad de usuarios
-  cantidadUsuarios: number;
+  // Usuarios - RENOMBRADO
+  cantidadUsuarios: number; // 5 min por usuario
   
-  // Subdominios
-  crearSubdominios: boolean;
+  // Subdominios - MODIFICADO: ahora es cantidad
+  cantidadSubdominios: number; // 1 hora por subdominio
   
   // Listas de distribución
   crearListas: boolean;
-  cantidadListas: number;
-  usuariosPorLista: number;
-  listaBlancaNegra: boolean;
-  cantidadDominios: number; // NUEVO: cantidad de dominios para lista blanca/negra
-  bloqueoIPs: boolean;
-  cantidadIPs: number;
+  cantidadListas: number; // 15 min por lista
+  
+  // Lista Blanca/Negra - MODIFICADO: ahora es cantidad de dominios
+  listasBlancaNegra: boolean;
+  cantidadDominiosListas: number; // 1 min por dominio
   
   // Reglas
   crearReglas: boolean;
   cantidadReglas: number;
+  mostrarAdvertenciaReglas: boolean; // NUEVO: Para el modal
 }
 
 interface TenantNuevoActions {
-  setTarea: (tarea: "creacion" | "existente") => void;
+  setTarea: (tarea: "creacion") => void;
   setCantidadUsuarios: (cantidad: number) => void;
-  setCrearSubdominios: (crear: boolean) => void;
+  setCantidadSubdominios: (cantidad: number) => void;
   setCrearListas: (crear: boolean) => void;
   setCantidadListas: (cantidad: number) => void;
-  setUsuariosPorLista: (cantidad: number) => void;
-  setListaBlancaNegra: (activo: boolean) => void;
-  setCantidadDominios: (cantidad: number) => void; // NUEVO
-  setBloqueoIPs: (activo: boolean) => void;
-  setCantidadIPs: (cantidad: number) => void;
+  setListasBlancaNegra: (activo: boolean) => void;
+  setCantidadDominiosListas: (cantidad: number) => void;
   setCrearReglas: (crear: boolean) => void;
   setCantidadReglas: (cantidad: number) => void;
+  setMostrarAdvertenciaReglas: (mostrar: boolean) => void;
   reset: () => void;
 }
 
 const initialState: TenantNuevoState = {
   tarea: "creacion",
   cantidadUsuarios: 0,
-  crearSubdominios: false,
+  cantidadSubdominios: 0,
   crearListas: false,
   cantidadListas: 0,
-  usuariosPorLista: 0,
-  listaBlancaNegra: false,
-  cantidadDominios: 0, // NUEVO
-  bloqueoIPs: false,
-  cantidadIPs: 0,
+  listasBlancaNegra: false,
+  cantidadDominiosListas: 0,
   crearReglas: false,
   cantidadReglas: 0,
+  mostrarAdvertenciaReglas: false,
 };
 
 export const useTenantNuevoStore = create<TenantNuevoState & TenantNuevoActions>(
@@ -61,16 +57,14 @@ export const useTenantNuevoStore = create<TenantNuevoState & TenantNuevoActions>
     
     setTarea: (tarea) => set({ tarea }),
     setCantidadUsuarios: (cantidadUsuarios) => set({ cantidadUsuarios }),
-    setCrearSubdominios: (crearSubdominios) => set({ crearSubdominios }),
+    setCantidadSubdominios: (cantidadSubdominios) => set({ cantidadSubdominios }),
     setCrearListas: (crearListas) => set({ crearListas }),
     setCantidadListas: (cantidadListas) => set({ cantidadListas }),
-    setUsuariosPorLista: (usuariosPorLista) => set({ usuariosPorLista }),
-    setListaBlancaNegra: (listaBlancaNegra) => set({ listaBlancaNegra }),
-    setCantidadDominios: (cantidadDominios) => set({ cantidadDominios }), // NUEVO
-    setBloqueoIPs: (bloqueoIPs) => set({ bloqueoIPs }),
-    setCantidadIPs: (cantidadIPs) => set({ cantidadIPs }),
+    setListasBlancaNegra: (listasBlancaNegra) => set({ listasBlancaNegra }),
+    setCantidadDominiosListas: (cantidadDominiosListas) => set({ cantidadDominiosListas }),
     setCrearReglas: (crearReglas) => set({ crearReglas }),
     setCantidadReglas: (cantidadReglas) => set({ cantidadReglas }),
+    setMostrarAdvertenciaReglas: (mostrarAdvertenciaReglas) => set({ mostrarAdvertenciaReglas }),
     reset: () => set(initialState),
   })
 );

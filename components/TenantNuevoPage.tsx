@@ -6,13 +6,16 @@ import {
   CardHeader,
   Input,
   Switch,
-  RadioGroup,
-  Radio,
   Button,
   Divider,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
 } from "@nextui-org/react";
 import { useTenantNuevoStore } from "@/lib/tenant-nuevo-store";
-import { calcularTiempoTenantNuevo } from "@/lib/calcular-tiempo";
+import { calcularTiempoTenantNuevo } from "@/lib/calcular-tenant-nuevo";
 import { generarPDF, obtenerFechaActual } from "@/lib/generar-pdf";
 import { useSession } from "next-auth/react";
 
@@ -28,9 +31,35 @@ export function TenantNuevoPage() {
       horas: resultado.horas,
       minutos: resultado.minutos,
       desglose: resultado.desglose,
+      disclaimer:
+        "Los tiempos son estimaciones basadas en configuraciones estándar. El tiempo real puede variar según la complejidad específica del tenant.",
       userName: session?.user?.name ?? undefined,
       userEmail: session?.user?.email ?? undefined,
     });
+  };
+
+  // Handler para mostrar advertencia antes de activar reglas
+  const handleToggleReglas = (value: boolean) => {
+    if (value && !state.crearReglas) {
+      // Mostrar modal de advertencia
+      state.setMostrarAdvertenciaReglas(true);
+    } else {
+      // Desactivar directamente
+      state.setCrearReglas(false);
+      state.setCantidadReglas(0);
+    }
+  };
+
+  // Handler para confirmar creación de reglas
+  const handleConfirmarReglas = () => {
+    state.setCrearReglas(true);
+    state.setMostrarAdvertenciaReglas(false);
+  };
+
+  // Handler para cancelar creación de reglas
+  const handleCancelarReglas = () => {
+    state.setCrearReglas(false);
+    state.setMostrarAdvertenciaReglas(false);
   };
 
   return (
@@ -48,117 +77,128 @@ export function TenantNuevoPage() {
           Nuevo Tenant
         </h1>
         <p className="text-lg text-seidor-500">
-          Configura los parámetros para calcular las horas de operación
+          Creación de nuevo tenant de Microsoft 365
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Formulario */}
         <div className="lg:col-span-2 space-y-6">
-          {/* 1. TAREA */}
+          {/* 1. CREACIÓN DE TENANT - FIJO */}
           <Card>
             <CardHeader className="pb-3">
               <div>
                 <h3 className="text-lg font-semibold text-seidor-400">
-                  Tipo de Tarea
+                  Creación de Tenant
                 </h3>
-                <p className="text-sm text-seidor-500">
-                  Selecciona si es un tenant nuevo o existente
-                </p>
+                <p className="text-sm text-seidor-500">2 horas</p>
               </div>
             </CardHeader>
             <CardBody>
-              <RadioGroup
-                value={state.tarea}
-                onValueChange={(value) =>
-                  state.setTarea(value as "creacion" | "existente")
-                }
-              >
-                <Radio value="creacion" description="3 horas de operación">
-                  Creación de tenant
-                </Radio>
-                <Radio value="existente" description="1 hora de operación">
-                  Tenant existente
-                </Radio>
-              </RadioGroup>
+              <div className="bg-seidor-50 p-4 rounded-lg">
+                <p className="text-sm text-gray-700">
+                  La creación del tenant base tiene una duración fija de{" "}
+                  <span className="font-semibold text-seidor-400">2 horas</span>.
+                </p>
+              </div>
             </CardBody>
           </Card>
 
-          {/* 2. CANTIDAD DE USUARIOS */}
+          {/* 2. USUARIOS - RENOMBRADO */}
           <Card>
             <CardHeader className="pb-3">
               <div>
                 <h3 className="text-lg font-semibold text-seidor-400">
-                  Cantidad de Usuarios
+                  Crear usuarios y asignar licencias
                 </h3>
                 <p className="text-sm text-seidor-500">
-                  Cada 10 usuarios = 1 hora
+                  5 minutos por cada usuario
                 </p>
               </div>
             </CardHeader>
             <CardBody>
               <Input
                 type="number"
-                label="Número de usuarios"
-                placeholder="Ej: 25"
+                label="Cantidad de usuarios"
+                placeholder="Ej: 50"
                 value={state.cantidadUsuarios.toString()}
                 onValueChange={(value) =>
                   state.setCantidadUsuarios(parseInt(value) || 0)
                 }
                 min={0}
+                className="max-w-xs"
                 description={
                   state.cantidadUsuarios > 0
-                    ? `${Math.ceil(state.cantidadUsuarios / 10)} ${
-                        Math.ceil(state.cantidadUsuarios / 10) === 1
-                          ? "hora"
-                          : "horas"
-                      } de configuración`
+                    ? `${state.cantidadUsuarios * 5} minutos total`
                     : ""
                 }
               />
             </CardBody>
           </Card>
 
-          {/* 3. SUBDOMINIOS */}
+          {/* 3. SUBDOMINIOS - MODIFICADO: AHORA ES CANTIDAD */}
           <Card>
+            <CardHeader className="pb-3">
+              <div>
+                <h3 className="text-lg font-semibold text-seidor-400">
+                  Creación de subdominios
+                </h3>
+                <p className="text-sm text-seidor-500">
+                  1 hora por cada subdominio
+                </p>
+              </div>
+            </CardHeader>
             <CardBody>
-              <Switch
-                isSelected={state.crearSubdominios}
-                onValueChange={state.setCrearSubdominios}
-              >
-                <div>
-                  <p className="font-semibold text-seidor-400">
-                    Creación de subdominios
-                  </p>
-                  <p className="text-sm text-seidor-500">1 hora adicional</p>
-                </div>
-              </Switch>
+              <Input
+                type="number"
+                label="Cantidad de subdominios"
+                placeholder="Ej: 3"
+                value={state.cantidadSubdominios.toString()}
+                onValueChange={(value) =>
+                  state.setCantidadSubdominios(parseInt(value) || 0)
+                }
+                min={0}
+                className="max-w-xs"
+                description={
+                  state.cantidadSubdominios > 0
+                    ? `${state.cantidadSubdominios} ${
+                        state.cantidadSubdominios === 1 ? "hora" : "horas"
+                      }`
+                    : ""
+                }
+              />
             </CardBody>
           </Card>
 
           {/* 4. LISTAS DE DISTRIBUCIÓN */}
           <Card>
             <CardHeader className="pb-3">
-              <div className="w-full">
-                <Switch
-                  isSelected={state.crearListas}
-                  onValueChange={state.setCrearListas}
-                >
-                  <div>
-                    <p className="font-semibold text-seidor-400">
-                      Creación de listas de distribución
-                    </p>
-                    <p className="text-sm text-seidor-500">
-                      Configura listas y seguridad
-                    </p>
-                  </div>
-                </Switch>
+              <div>
+                <h3 className="text-lg font-semibold text-seidor-400">
+                  Listas de distribución
+                </h3>
+                <p className="text-sm text-seidor-500">
+                  Creación de listas de distribución
+                </p>
               </div>
             </CardHeader>
-            {state.crearListas && (
-              <CardBody className="pt-0 space-y-4">
-                <Divider />
-                <div className="grid grid-cols-2 gap-4">
+            <CardBody className="space-y-4">
+              <Switch
+                isSelected={state.crearListas}
+                onValueChange={state.setCrearListas}
+              >
+                <div>
+                  <p className="font-semibold text-seidor-400">
+                    Crear listas de distribución
+                  </p>
+                  <p className="text-sm text-seidor-500">
+                    15 minutos por lista
+                  </p>
+                </div>
+              </Switch>
+
+              {state.crearListas && (
+                <div className="ml-6 space-y-4">
                   <Input
                     type="number"
                     label="Cantidad de listas"
@@ -168,109 +208,83 @@ export function TenantNuevoPage() {
                       state.setCantidadListas(parseInt(value) || 0)
                     }
                     min={0}
-                  />
-                  <Input
-                    type="number"
-                    label="Usuarios por lista"
-                    placeholder="Ej: 10"
-                    value={state.usuariosPorLista.toString()}
-                    onValueChange={(value) =>
-                      state.setUsuariosPorLista(parseInt(value) || 0)
+                    className="max-w-xs"
+                    description={
+                      state.cantidadListas > 0
+                        ? `${state.cantidadListas * 15} minutos total`
+                        : ""
                     }
-                    min={0}
                   />
                 </div>
+              )}
+            </CardBody>
+          </Card>
 
+          {/* CONFIGURACIONES ADICIONALES */}
+          <Card className="border-2 border-seidor-200">
+            <CardHeader className="bg-seidor-50">
+              <div>
+                <h2 className="text-xl font-bold text-seidor-400">
+                  Configuraciones Adicionales
+                </h2>
+                <p className="text-sm text-seidor-500">
+                  Seguridad y reglas personalizadas
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody className="space-y-4">
+              {/* SEGURIDAD */}
+              <div className="space-y-3">
+                <h3 className="text-md font-semibold text-seidor-400">
+                  Seguridad
+                </h3>
                 <div className="bg-seidor-50 p-4 rounded-lg space-y-3">
-                  <p className="text-sm font-semibold text-seidor-400">
-                    Configuraciones de seguridad
-                  </p>
-
-                  {/* Lista Blanca/Negra */}
+                  {/* Lista Blanca/Negra - MODIFICADO */}
                   <div className="space-y-2">
                     <Switch
                       size="sm"
-                      isSelected={state.listaBlancaNegra}
-                      onValueChange={state.setListaBlancaNegra}
+                      isSelected={state.listasBlancaNegra}
+                      onValueChange={state.setListasBlancaNegra}
                     >
                       <div>
                         <p className="text-sm font-medium text-seidor-400">
-                          Lista Blanca / Lista Negra
+                          Creación de lista blanca/lista negra
                         </p>
                         <p className="text-xs text-seidor-500">
-                          5 minutos por dominio
+                          Cuentas, dominios e IPs - 1 minuto por dominio
                         </p>
                       </div>
                     </Switch>
-                    {state.listaBlancaNegra && (
+                    {state.listasBlancaNegra && (
                       <Input
                         size="sm"
                         type="number"
                         label="Cantidad de dominios"
-                        placeholder="Ej: 20"
-                        value={state.cantidadDominios.toString()}
-                        onValueChange={(value) =>
-                          state.setCantidadDominios(parseInt(value) || 0)
-                        }
-                        min={0}
-                        className="ml-6"
-                        description={
-                          state.cantidadDominios > 0
-                            ? `${state.cantidadDominios * 5} minutos total`
-                            : ""
-                        }
-                      />
-                    )}
-                  </div>
-
-                  {/* Bloqueo de IPs */}
-                  <div className="space-y-2">
-                    <Switch
-                      size="sm"
-                      isSelected={state.bloqueoIPs}
-                      onValueChange={state.setBloqueoIPs}
-                    >
-                      <div>
-                        <p className="text-sm font-medium text-seidor-400">
-                          Bloqueo de IPs
-                        </p>
-                        <p className="text-xs text-seidor-500">
-                          5 minutos por IP
-                        </p>
-                      </div>
-                    </Switch>
-                    {state.bloqueoIPs && (
-                      <Input
-                        size="sm"
-                        type="number"
-                        label="Cantidad de IPs a bloquear"
                         placeholder="Ej: 10"
-                        value={state.cantidadIPs.toString()}
+                        value={state.cantidadDominiosListas.toString()}
                         onValueChange={(value) =>
-                          state.setCantidadIPs(parseInt(value) || 0)
+                          state.setCantidadDominiosListas(parseInt(value) || 0)
                         }
                         min={0}
-                        className="ml-6"
+                        className="ml-6 max-w-xs"
                         description={
-                          state.cantidadIPs > 0
-                            ? `${state.cantidadIPs * 5} minutos total`
+                          state.cantidadDominiosListas > 0
+                            ? `${state.cantidadDominiosListas} minutos total`
                             : ""
                         }
                       />
                     )}
                   </div>
                 </div>
-              </CardBody>
-            )}
-          </Card>
+              </div>
 
-          {/* 5. REGLAS */}
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="w-full">
+              <Divider />
+
+              {/* CREACIÓN DE REGLAS - CON ADVERTENCIA */}
+              <div>
                 <Switch
                   isSelected={state.crearReglas}
-                  onValueChange={state.setCrearReglas}
+                  onValueChange={handleToggleReglas}
                 >
                   <div>
                     <p className="font-semibold text-seidor-400">
@@ -281,28 +295,60 @@ export function TenantNuevoPage() {
                     </p>
                   </div>
                 </Switch>
+                {state.crearReglas && (
+                  <div className="mt-3 ml-6">
+                    <Input
+                      size="sm"
+                      type="number"
+                      label="Cantidad de reglas"
+                      placeholder="Ej: 8"
+                      value={state.cantidadReglas.toString()}
+                      onValueChange={(value) =>
+                        state.setCantidadReglas(parseInt(value) || 0)
+                      }
+                      min={0}
+                      className="max-w-xs"
+                      description={
+                        state.cantidadReglas > 0
+                          ? `${state.cantidadReglas * 15} minutos total`
+                          : ""
+                      }
+                    />
+                  </div>
+                )}
               </div>
-            </CardHeader>
-            {state.crearReglas && (
-              <CardBody className="pt-0">
-                <Divider className="mb-4" />
-                <Input
-                  type="number"
-                  label="Cantidad de reglas"
-                  placeholder="Ej: 8"
-                  value={state.cantidadReglas.toString()}
-                  onValueChange={(value) =>
-                    state.setCantidadReglas(parseInt(value) || 0)
-                  }
-                  min={0}
-                  description={
-                    state.cantidadReglas > 0
-                      ? `${state.cantidadReglas * 15} minutos total`
-                      : ""
-                  }
-                />
-              </CardBody>
-            )}
+            </CardBody>
+          </Card>
+
+          {/* Disclaimer */}
+          <Card className="bg-blue-50 border-l-4 border-blue-500">
+            <CardBody>
+              <div className="flex items-start gap-3">
+                <svg
+                  className="w-6 h-6 text-blue-500 flex-shrink-0 mt-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <div className="text-sm text-gray-700">
+                  <p className="font-semibold mb-2">
+                    Información importante:
+                  </p>
+                  <p className="leading-relaxed">
+                    Los tiempos son estimaciones basadas en configuraciones
+                    estándar. El tiempo real puede variar según la complejidad
+                    específica del tenant.
+                  </p>
+                </div>
+              </div>
+            </CardBody>
           </Card>
 
           {/* Botones de acción */}
@@ -358,15 +404,13 @@ export function TenantNuevoPage() {
         {/* Resumen de Cálculo */}
         <div className="lg:col-span-1">
           <div className="sticky top-8">
-            <Card className="bg-gradient-to-br from-seidor-400 to-seidor-300 text-white">
+            <Card className="bg-gradient-to-br from-seidor-400 to-seidor-300 text-white max-h-[calc(100vh-6rem)] overflow-y-auto">
               <CardHeader>
                 <h3 className="text-xl font-bold">Tiempo Total Estimado</h3>
               </CardHeader>
               <CardBody>
                 <div className="text-center py-6">
-                  <div className="text-5xl font-bold mb-2">
-                    {resultado.horas}
-                  </div>
+                  <div className="text-5xl font-bold mb-2">{resultado.horas}</div>
                   <div className="text-xl mb-1">
                     {resultado.horas === 1 ? "hora" : "horas"}
                   </div>
@@ -407,6 +451,62 @@ export function TenantNuevoPage() {
           </div>
         </div>
       </div>
+
+      {/* MODAL DE ADVERTENCIA PARA REGLAS */}
+      <Modal
+        isOpen={state.mostrarAdvertenciaReglas}
+        onClose={handleCancelarReglas}
+        size="lg"
+      >
+        <ModalContent>
+          <ModalHeader className="flex items-center gap-2">
+            <svg
+              className="w-6 h-6 text-amber-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <span>Advertencia - Creación de Reglas</span>
+          </ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              <p className="text-gray-700 leading-relaxed">
+                Antes de habilitar la <strong>Creación de Reglas</strong>, tener
+                en cuenta que esta opción puede tener riesgos, tales como:
+              </p>
+              <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+                <p className="text-amber-900 font-medium">
+                  ⚠️ Forward de información sensible a usuario homónimo o no
+                  autorizado
+                </p>
+              </div>
+              <p className="text-sm text-gray-600">
+                Asegúrese de revisar todas las reglas antes de aplicarlas y
+                verifique que los destinatarios sean correctos.
+              </p>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="danger"
+              variant="flat"
+              onPress={handleCancelarReglas}
+            >
+              Cancelar
+            </Button>
+            <Button color="warning" onPress={handleConfirmarReglas}>
+              Aceptar y continuar
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

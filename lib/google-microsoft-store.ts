@@ -10,52 +10,53 @@ export interface GoogleMicrosoftState {
   // Usuarios
   cantidadUsuarios: number;
   
-  // Configuración de Tenant
-  configuracionTenant: "google" | "microsoft";
-  
-  // Configuración de BitTitan
-  mailbox: boolean;
-  onedrive: boolean;
+  // Configuración de Tenant (BitTitan o Nativa)
+  configuracionTenant: "bittitan" | "nativa";
   
   // CONFIGURACIONES ADICIONALES
-  // Seguridad
-  listaBlancaNegra: boolean;
-  bloqueoIPs: boolean;
-  cantidadIPs: number;
+  // Seguridad 
+  listasBlancaNegra: boolean;
+  cantidadDominiosListas: number; // 1 min por dominio
+  listasDistribucion: boolean;
+  cantidadListasDistribucion: number; // 15 min por lista
   
   // Reglas
   crearReglas: boolean;
   cantidadReglas: number;
+  mostrarAdvertenciaReglas: boolean; 
   
   // ALMACENAMIENTO
-  // Licencia
-  licenciaTenant: "estandar" | "premium";
-  
-  // Opciones Estándar
+  // Opciones de Retención y Archivado
   crearPoliticasRetencion: boolean;
   politicasRetencion: boolean;
   usuariosPoliticasRetencion: number;
   habilitarArchivado: boolean;
   usuariosArchivado: number;
   
-  // Opciones Premium
+  // Auto-expanding archivado
   autoExpandingArchivado: boolean;
   usuariosAutoExpanding: number;
+  
+  // Forzar archivado
+  forzarArchivado: boolean;
+  usuariosForzarArchivado: number;
+  
+  // Monitoreo de usuarios
+  monitoreoUsuarios: number;
 }
 
 interface GoogleMicrosoftActions {
   setPanel: (panel: "crear" | "existente") => void;
   setCantidadDominios: (cantidad: number) => void;
   setCantidadUsuarios: (cantidad: number) => void;
-  setConfiguracionTenant: (config: "google" | "microsoft") => void;
-  setMailbox: (activo: boolean) => void;
-  setOnedrive: (activo: boolean) => void;
-  setListaBlancaNegra: (activo: boolean) => void;
-  setBloqueoIPs: (activo: boolean) => void;
-  setCantidadIPs: (cantidad: number) => void;
+  setConfiguracionTenant: (config: "bittitan" | "nativa") => void;
+  setListasBlancaNegra: (activo: boolean) => void;
+  setCantidadDominiosListas: (cantidad: number) => void;
+  setListasDistribucion: (activo: boolean) => void;
+  setCantidadListasDistribucion: (cantidad: number) => void;
   setCrearReglas: (crear: boolean) => void;
   setCantidadReglas: (cantidad: number) => void;
-  setLicenciaTenant: (licencia: "estandar" | "premium") => void;
+  setMostrarAdvertenciaReglas: (mostrar: boolean) => void;
   setCrearPoliticasRetencion: (crear: boolean) => void;
   setPoliticasRetencion: (activo: boolean) => void;
   setUsuariosPoliticasRetencion: (cantidad: number) => void;
@@ -63,6 +64,9 @@ interface GoogleMicrosoftActions {
   setUsuariosArchivado: (cantidad: number) => void;
   setAutoExpandingArchivado: (activo: boolean) => void;
   setUsuariosAutoExpanding: (cantidad: number) => void;
+  setForzarArchivado: (activo: boolean) => void;
+  setUsuariosForzarArchivado: (cantidad: number) => void;
+  setMonitoreoUsuarios: (cantidad: number) => void;
   reset: () => void;
 }
 
@@ -70,15 +74,14 @@ const initialState: GoogleMicrosoftState = {
   panel: "crear",
   cantidadDominios: 0,
   cantidadUsuarios: 0,
-  configuracionTenant: "google",
-  mailbox: false,
-  onedrive: false,
-  listaBlancaNegra: false,
-  bloqueoIPs: false,
-  cantidadIPs: 0,
+  configuracionTenant: "bittitan",
+  listasBlancaNegra: false,
+  cantidadDominiosListas: 0,
+  listasDistribucion: false,
+  cantidadListasDistribucion: 0,
   crearReglas: false,
   cantidadReglas: 0,
-  licenciaTenant: "estandar",
+  mostrarAdvertenciaReglas: false,
   crearPoliticasRetencion: false,
   politicasRetencion: false,
   usuariosPoliticasRetencion: 0,
@@ -86,6 +89,9 @@ const initialState: GoogleMicrosoftState = {
   usuariosArchivado: 0,
   autoExpandingArchivado: false,
   usuariosAutoExpanding: 0,
+  forzarArchivado: false,
+  usuariosForzarArchivado: 0,
+  monitoreoUsuarios: 0,
 };
 
 export const useGoogleMicrosoftStore = create<
@@ -97,14 +103,13 @@ export const useGoogleMicrosoftStore = create<
   setCantidadDominios: (cantidadDominios) => set({ cantidadDominios }),
   setCantidadUsuarios: (cantidadUsuarios) => set({ cantidadUsuarios }),
   setConfiguracionTenant: (configuracionTenant) => set({ configuracionTenant }),
-  setMailbox: (mailbox) => set({ mailbox }),
-  setOnedrive: (onedrive) => set({ onedrive }),
-  setListaBlancaNegra: (listaBlancaNegra) => set({ listaBlancaNegra }),
-  setBloqueoIPs: (bloqueoIPs) => set({ bloqueoIPs }),
-  setCantidadIPs: (cantidadIPs) => set({ cantidadIPs }),
+  setListasBlancaNegra: (listasBlancaNegra) => set({ listasBlancaNegra }),
+  setCantidadDominiosListas: (cantidadDominiosListas) => set({ cantidadDominiosListas }),
+  setListasDistribucion: (listasDistribucion) => set({ listasDistribucion }),
+  setCantidadListasDistribucion: (cantidadListasDistribucion) => set({ cantidadListasDistribucion }),
   setCrearReglas: (crearReglas) => set({ crearReglas }),
   setCantidadReglas: (cantidadReglas) => set({ cantidadReglas }),
-  setLicenciaTenant: (licenciaTenant) => set({ licenciaTenant }),
+  setMostrarAdvertenciaReglas: (mostrarAdvertenciaReglas) => set({ mostrarAdvertenciaReglas }),
   setCrearPoliticasRetencion: (crearPoliticasRetencion) =>
     set({ crearPoliticasRetencion }),
   setPoliticasRetencion: (politicasRetencion) => set({ politicasRetencion }),
@@ -116,5 +121,8 @@ export const useGoogleMicrosoftStore = create<
     set({ autoExpandingArchivado }),
   setUsuariosAutoExpanding: (usuariosAutoExpanding) =>
     set({ usuariosAutoExpanding }),
+  setForzarArchivado: (forzarArchivado) => set({ forzarArchivado }),
+  setUsuariosForzarArchivado: (usuariosForzarArchivado) => set({ usuariosForzarArchivado }),
+  setMonitoreoUsuarios: (monitoreoUsuarios) => set({ monitoreoUsuarios }),
   reset: () => set(initialState),
 }));

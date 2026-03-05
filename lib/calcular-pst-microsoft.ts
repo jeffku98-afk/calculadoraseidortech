@@ -17,12 +17,12 @@ export function calcularTiempoPSTMicrosoft(
   const desglose: TiempoCalculado["desglose"] = [];
   let totalMinutos = 0;
 
-  // 1. PANEL
+  // 1. PANEL 
   if (state.panel === "crear") {
-    totalMinutos += 180; // 3 horas
+    totalMinutos += 120; // 2 horas
     desglose.push({
       concepto: "Creación de panel",
-      tiempo: "3 horas",
+      tiempo: "2 horas",
     });
   } else {
     totalMinutos += 60; // 1 hora
@@ -32,7 +32,7 @@ export function calcularTiempoPSTMicrosoft(
     });
   }
 
-  // 2. USUARIOS - 5 minutos por usuario
+  // 2. USUARIOS - 5 minutos por usuario 
   if (state.cantidadUsuarios > 0) {
     const minutosUsuarios = state.cantidadUsuarios * 5;
     totalMinutos += minutosUsuarios;
@@ -46,13 +46,11 @@ export function calcularTiempoPSTMicrosoft(
       tiempoTexto = `${minutos} min`;
     }
     desglose.push({
-      concepto: "Configuración de usuarios",
+      concepto: "Crear usuarios y asignar licencias",
       tiempo: tiempoTexto,
       detalle: `${state.cantidadUsuarios} usuarios (5 min c/u)`,
     });
   }
-
-  // NOTA: El tamaño máximo es solo referencial, no se suma al tiempo
 
   const horas = Math.floor(totalMinutos / 60);
   const minutos = totalMinutos % 60;

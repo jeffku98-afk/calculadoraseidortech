@@ -14,8 +14,8 @@ interface DatosPDF {
   minutos: number;
   desglose: DetalleHoras[];
   disclaimer?: string;
-  userName?: string;      // ← NUEVO
-  userEmail?: string;     // ← NUEVO
+  userName?: string;   
+  userEmail?: string;    
 }
 
 // Función para convertir imagen a base64
@@ -61,9 +61,9 @@ export async function generarPDF(datos: DatosPDF) {
 
   let yPosition = 20;
 
-  // ==========================================
+
   // HEADER - Estilo Opción 3 (Panel Blanco)
-  // ==========================================
+
   
   // Fondo azul degradado simulado
   doc.setFillColor(...colorPrimario);

@@ -9,6 +9,8 @@ import { MicrosoftGooglePage } from "@/components/MicrosoftGooglePage";
 import { BackupAcronisPage } from "@/components/BackupAcronisPage";
 import { TenantTenantPage } from "@/components/TenantTenantPage";
 import { PSTMicrosoftPage } from "@/components/PSTMicrosoftPage";
+import { TiempoMigracionPage } from "@/components/TiempoMigracionPage";
+import { ConfiguracionTenantPage } from "@/components/ConfiguracionTenantPage";
 import { useNavigationStore } from "@/lib/store";
 import { Button } from "@nextui-org/react";
 
@@ -87,6 +89,10 @@ export default function Home() {
           )}
 
           {currentMenu === "backup-acronis" && <BackupAcronisPage />}
+
+          {currentMenu === "tiempo-migracion" && <TiempoMigracionPage />}
+
+          {currentMenu === "configuracion-tenant" && <ConfiguracionTenantPage />}
         </main>
       </div>
     </div>

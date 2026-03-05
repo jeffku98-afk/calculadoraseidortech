@@ -8,6 +8,7 @@ import {
   RadioGroup,
   Radio,
   Button,
+  Divider,
 } from "@nextui-org/react";
 import { usePSTMicrosoftStore } from "@/lib/pst-microsoft-store";
 import { calcularTiempoPSTMicrosoft } from "@/lib/calcular-pst-microsoft";
@@ -58,7 +59,7 @@ export function PSTMicrosoftPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Formulario */}
         <div className="lg:col-span-2 space-y-6">
-          {/* 1. PANEL */}
+          {/* 1. PANEL - MODIFICADO: 2 horas */}
           <Card>
             <CardHeader className="pb-3">
               <div>
@@ -75,7 +76,7 @@ export function PSTMicrosoftPage() {
                   state.setPanel(value as "crear" | "existente")
                 }
               >
-                <Radio value="crear" description="3 horas de operación">
+                <Radio value="crear" description="2 horas de operación">
                   Crear
                 </Radio>
                 <Radio value="existente" description="1 hora de operación">
@@ -85,12 +86,12 @@ export function PSTMicrosoftPage() {
             </CardBody>
           </Card>
 
-          {/* 2. USUARIOS */}
+          {/* 2. USUARIOS - RENOMBRADO */}
           <Card>
             <CardHeader className="pb-3">
               <div>
                 <h3 className="text-lg font-semibold text-seidor-400">
-                  Usuarios
+                  Crear usuarios y asignar licencias
                 </h3>
                 <p className="text-sm text-seidor-500">
                   5 minutos por cada usuario
@@ -107,6 +108,7 @@ export function PSTMicrosoftPage() {
                   state.setCantidadUsuarios(parseInt(value) || 0)
                 }
                 min={0}
+                className="max-w-xs"
                 description={
                   state.cantidadUsuarios > 0
                     ? `${state.cantidadUsuarios * 5} minutos total`
@@ -270,7 +272,7 @@ export function PSTMicrosoftPage() {
         {/* Resumen de Cálculo */}
         <div className="lg:col-span-1">
           <div className="sticky top-8">
-            <Card className="bg-gradient-to-br from-seidor-400 to-seidor-300 text-white">
+            <Card className="bg-gradient-to-br from-seidor-400 to-seidor-300 text-white max-h-[calc(100vh-6rem)] overflow-y-auto">
               <CardHeader>
                 <h3 className="text-xl font-bold">Tiempo Total Estimado</h3>
               </CardHeader>
@@ -288,6 +290,9 @@ export function PSTMicrosoftPage() {
                     </div>
                   )}
                 </div>
+                
+                <Divider className="bg-white/30 my-4" />
+                
                 <div className="bg-white/10 p-3 rounded-lg text-sm mb-4">
                   <p className="font-semibold mb-1">Tamaño de referencia:</p>
                   <p className="text-2xl font-bold">
@@ -296,6 +301,7 @@ export function PSTMicrosoftPage() {
                       : "No especificado"}
                   </p>
                 </div>
+                
                 <div className="space-y-3">
                   <p className="font-semibold text-sm opacity-90">
                     Desglose de tiempo:
