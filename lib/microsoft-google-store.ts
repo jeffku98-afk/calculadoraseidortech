@@ -10,7 +10,7 @@ export interface MicrosoftGoogleState {
   // Usuarios
   cantidadUsuarios: number;
   
-  // CONFIGURACIÓN DE TENANT 
+  // CONFIGURACIÓN DE TENANT (fusionada - igual que Google→Microsoft)
   configuracionTenant: "bittitan" | "nativa";
   
   // CONFIGURACIONES ADICIONALES
@@ -25,7 +25,7 @@ export interface MicrosoftGoogleState {
   cantidadReglas: number;
   mostrarAdvertenciaReglas: boolean; // Para el modal
   
-  // ALMACENAMIENTO 
+  // ALMACENAMIENTO - SIN LICENCIAS (igual que Google→Microsoft)
   // Opciones de Retención y Archivado
   crearPoliticasRetencion: boolean;
   politicasRetencion: boolean;
@@ -40,6 +40,9 @@ export interface MicrosoftGoogleState {
   // Forzar archivado
   forzarArchivado: boolean;
   usuariosForzarArchivado: number;
+  
+  // Monitoreo de usuarios 
+  monitoreoUsuarios: number;
 }
 
 interface MicrosoftGoogleActions {
@@ -63,6 +66,7 @@ interface MicrosoftGoogleActions {
   setUsuariosAutoExpanding: (cantidad: number) => void;
   setForzarArchivado: (activo: boolean) => void;
   setUsuariosForzarArchivado: (cantidad: number) => void;
+  setMonitoreoUsuarios: (cantidad: number) => void;
   reset: () => void;
 }
 
@@ -87,6 +91,7 @@ const initialState: MicrosoftGoogleState = {
   usuariosAutoExpanding: 0,
   forzarArchivado: false,
   usuariosForzarArchivado: 0,
+  monitoreoUsuarios: 0,
 };
 
 export const useMicrosoftGoogleStore = create<
@@ -118,5 +123,6 @@ export const useMicrosoftGoogleStore = create<
     set({ usuariosAutoExpanding }),
   setForzarArchivado: (forzarArchivado) => set({ forzarArchivado }),
   setUsuariosForzarArchivado: (usuariosForzarArchivado) => set({ usuariosForzarArchivado }),
+  setMonitoreoUsuarios: (monitoreoUsuarios) => set({ monitoreoUsuarios }),
   reset: () => set(initialState),
 }));

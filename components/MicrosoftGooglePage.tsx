@@ -159,7 +159,7 @@ export function MicrosoftGooglePage() {
                   Crear usuarios y asignar licencias
                 </h3>
                 <p className="text-sm text-seidor-500">
-                  5 minutos por cada usuario
+                  1 minuto por cada usuario
                 </p>
               </div>
             </CardHeader>
@@ -176,7 +176,7 @@ export function MicrosoftGooglePage() {
                 className="max-w-xs"
                 description={
                   state.cantidadUsuarios > 0
-                    ? `${state.cantidadUsuarios * 5} minutos total`
+                    ? `${state.cantidadUsuarios * 1} minutos total`
                     : ""
                 }
               />
@@ -363,7 +363,7 @@ export function MicrosoftGooglePage() {
             </CardBody>
           </Card>
 
-          {/* ALMACENAMIENTO */}
+          {/* ALMACENAMIENTO - SIN LICENCIAS */}
           <Card>
             <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
               <div>
@@ -539,6 +539,36 @@ export function MicrosoftGooglePage() {
                   </div>
                 </div>
               </div>
+            </CardBody>
+          </Card>
+
+          {/* MONITOREO DE USUARIOS - NUEVO */}
+          <Card className="border-2 border-blue-200">
+            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
+              <div>
+                <h2 className="text-xl font-bold">Monitoreo de Usuarios</h2>
+                <p className="text-sm opacity-90">
+                  10 minutos por cada usuario monitoreado
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <Input
+                type="number"
+                label="Cantidad de usuarios a monitorear"
+                placeholder="Ej: 50"
+                value={state.monitoreoUsuarios.toString()}
+                onValueChange={(value) =>
+                  state.setMonitoreoUsuarios(parseInt(value) || 0)
+                }
+                min={0}
+                className="max-w-xs"
+                description={
+                  state.monitoreoUsuarios > 0
+                    ? `${state.monitoreoUsuarios * 10} minutos total`
+                    : ""
+                }
+              />
             </CardBody>
           </Card>
 

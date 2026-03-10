@@ -24,9 +24,9 @@ export function calcularTiempoTenantNuevo(
     tiempo: "2 horas",
   });
 
-  // 2. USUARIOS - 5 minutos por usuario
+  // 2. USUARIOS - 1 minuto por usuario
   if (state.cantidadUsuarios > 0) {
-    const minutosUsuarios = state.cantidadUsuarios * 5;
+    const minutosUsuarios = state.cantidadUsuarios * 1;
     totalMinutos += minutosUsuarios;
     const horas = Math.floor(minutosUsuarios / 60);
     const minutos = minutosUsuarios % 60;
@@ -40,7 +40,7 @@ export function calcularTiempoTenantNuevo(
     desglose.push({
       concepto: "Crear usuarios y asignar licencias",
       tiempo: tiempoTexto,
-      detalle: `${state.cantidadUsuarios} usuarios (5 min c/u)`,
+      detalle: `${state.cantidadUsuarios} usuarios (1 min c/u)`,
     });
   }
 

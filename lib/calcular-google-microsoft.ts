@@ -47,9 +47,9 @@ export function calcularTiempoGoogleMicrosoft(
     });
   }
 
-  // 3. USUARIOS - 5 minutos por usuario
+  // 3. USUARIOS - 1 minuto por usuario
   if (state.cantidadUsuarios > 0) {
-    const minutosUsuarios = state.cantidadUsuarios * 5;
+    const minutosUsuarios = state.cantidadUsuarios * 1;
     totalMinutos += minutosUsuarios;
     const horas = Math.floor(minutosUsuarios / 60);
     const minutos = minutosUsuarios % 60;
@@ -63,7 +63,7 @@ export function calcularTiempoGoogleMicrosoft(
     desglose.push({
       concepto: "Crear usuarios y asignar licencias",
       tiempo: tiempoTexto,
-      detalle: `${state.cantidadUsuarios} usuarios (5 min c/u)`,
+      detalle: `${state.cantidadUsuarios} usuarios (1 min c/u)`,
     });
   }
 
@@ -221,7 +221,7 @@ export function calcularTiempoGoogleMicrosoft(
     });
   }
 
-  // 12. FORZAR ARCHIVADO 
+  // 12. FORZAR ARCHIVADO - NUEVO
   if (state.forzarArchivado && state.usuariosForzarArchivado > 0) {
     const minutosForzar = state.usuariosForzarArchivado * 1;
     totalMinutos += minutosForzar;
@@ -243,7 +243,7 @@ export function calcularTiempoGoogleMicrosoft(
 
   // 13. MONITOREO DE USUARIOS
   if (state.monitoreoUsuarios > 0) {
-    const minutosMonitoreo = state.monitoreoUsuarios * 15;
+    const minutosMonitoreo = state.monitoreoUsuarios * 10;
     totalMinutos += minutosMonitoreo;
     const horas = Math.floor(minutosMonitoreo / 60);
     const minutos = minutosMonitoreo % 60;
@@ -257,7 +257,7 @@ export function calcularTiempoGoogleMicrosoft(
     desglose.push({
       concepto: "Monitoreo de usuarios",
       tiempo: tiempoTexto,
-      detalle: `${state.monitoreoUsuarios} usuarios (15 min c/u)`,
+      detalle: `${state.monitoreoUsuarios} usuarios (10 min c/u)`,
     });
   }
 

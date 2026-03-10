@@ -47,9 +47,9 @@ export function calcularTiempoMicrosoftGoogle(
     });
   }
 
-  // 3. USUARIOS - 5 minutos por usuario
+  // 3. USUARIOS - 1 minuto por usuario
   if (state.cantidadUsuarios > 0) {
-    const minutosUsuarios = state.cantidadUsuarios * 5;
+    const minutosUsuarios = state.cantidadUsuarios * 1;
     totalMinutos += minutosUsuarios;
     const horas = Math.floor(minutosUsuarios / 60);
     const minutos = minutosUsuarios % 60;
@@ -63,11 +63,11 @@ export function calcularTiempoMicrosoftGoogle(
     desglose.push({
       concepto: "Crear usuarios y asignar licencias",
       tiempo: tiempoTexto,
-      detalle: `${state.cantidadUsuarios} usuarios (5 min c/u)`,
+      detalle: `${state.cantidadUsuarios} usuarios (1 min c/u)`,
     });
   }
 
-  // 4. CONFIGURACIÓN DE TENANT - FUSIONADA
+  // 4. CONFIGURACIÓN DE TENANT - FUSIONADA (igual que Google→Microsoft)
   if (state.configuracionTenant === "bittitan") {
     totalMinutos += 780; // 13 horas (3h Google + 10h Microsoft)
     desglose.push({
@@ -150,7 +150,7 @@ export function calcularTiempoMicrosoftGoogle(
     });
   }
 
-  // ALMACENAMIENTO 
+  // ALMACENAMIENTO - SIN LICENCIAS (igual que Google→Microsoft)
 
   // 8. CREAR POLÍTICAS DE RETENCIÓN
   if (state.crearPoliticasRetencion) {
@@ -201,7 +201,7 @@ export function calcularTiempoMicrosoftGoogle(
     });
   }
 
-  // 11. AUTO-EXPANDING ARCHIVADO
+  // 11. AUTO-EXPANDING ARCHIVADO - SIN VERIFICACIÓN DE LICENCIA
   if (state.autoExpandingArchivado && state.usuariosAutoExpanding > 0) {
     const minutosAutoExp = state.usuariosAutoExpanding * 5;
     totalMinutos += minutosAutoExp;
@@ -238,6 +238,26 @@ export function calcularTiempoMicrosoftGoogle(
       concepto: "Forzar archivado",
       tiempo: tiempoTexto,
       detalle: `${state.usuariosForzarArchivado} usuarios (1 min c/u)`,
+    });
+  }
+
+  // 13. MONITOREO DE USUARIOS - NUEVO
+  if (state.monitoreoUsuarios > 0) {
+    const minutosMonitoreo = state.monitoreoUsuarios * 10;
+    totalMinutos += minutosMonitoreo;
+    const horas = Math.floor(minutosMonitoreo / 60);
+    const minutos = minutosMonitoreo % 60;
+    let tiempoTexto = "";
+    if (horas > 0) {
+      tiempoTexto = `${horas} ${horas === 1 ? "hora" : "horas"}`;
+      if (minutos > 0) tiempoTexto += ` ${minutos} min`;
+    } else {
+      tiempoTexto = `${minutos} min`;
+    }
+    desglose.push({
+      concepto: "Monitoreo de usuarios",
+      tiempo: tiempoTexto,
+      detalle: `${state.monitoreoUsuarios} usuarios (10 min c/u)`,
     });
   }
 

@@ -157,7 +157,7 @@ export function TenantTenantPage() {
                   Crear usuarios y asignar licencias
                 </h3>
                 <p className="text-sm text-seidor-500">
-                  5 minutos por cada usuario
+                  1 minuto por cada usuario
                 </p>
               </div>
             </CardHeader>
@@ -174,7 +174,7 @@ export function TenantTenantPage() {
                 className="max-w-xs"
                 description={
                   state.cantidadUsuarios > 0
-                    ? `${state.cantidadUsuarios * 5} minutos total`
+                    ? `${state.cantidadUsuarios * 1} minutos total`
                     : ""
                 }
               />

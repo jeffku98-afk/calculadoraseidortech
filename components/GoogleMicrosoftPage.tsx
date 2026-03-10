@@ -159,7 +159,7 @@ export function GoogleMicrosoftPage() {
                   Crear usuarios y asignar licencias
                 </h3>
                 <p className="text-sm text-seidor-500">
-                  5 minutos por cada usuario
+                  1 minuto por cada usuario
                 </p>
               </div>
             </CardHeader>
@@ -176,7 +176,7 @@ export function GoogleMicrosoftPage() {
                 className="max-w-xs"
                 description={
                   state.cantidadUsuarios > 0
-                    ? `${state.cantidadUsuarios * 5} minutos total`
+                    ? `${state.cantidadUsuarios * 1} minutos total`
                     : ""
                 }
               />
@@ -550,7 +550,7 @@ export function GoogleMicrosoftPage() {
               <div>
                 <h2 className="text-xl font-bold">Monitoreo de Usuarios</h2>
                 <p className="text-sm opacity-90">
-                  15 minutos por cada usuario monitoreado
+                  10 minutos por cada usuario monitoreado
                 </p>
               </div>
             </CardHeader>
@@ -567,7 +567,7 @@ export function GoogleMicrosoftPage() {
                 className="max-w-xs"
                 description={
                   state.monitoreoUsuarios > 0
-                    ? `${state.monitoreoUsuarios * 15} minutos total`
+                    ? `${state.monitoreoUsuarios * 10} minutos total`
                     : ""
                 }
               />
@@ -750,7 +750,7 @@ export function GoogleMicrosoftPage() {
           </ModalBody>
           <ModalFooter>
             <Button
-              color="danger"
+              color="default"
               variant="flat"
               onPress={handleCancelarReglas}
             >

@@ -17,9 +17,9 @@ export function calcularTiempoPSTMicrosoft(
   const desglose: TiempoCalculado["desglose"] = [];
   let totalMinutos = 0;
 
-  // 1. PANEL 
+  // 1. PANEL - MODIFICADO: Crear ahora es 2 horas
   if (state.panel === "crear") {
-    totalMinutos += 120; // 2 horas
+    totalMinutos += 120; // 2 horas (antes 3)
     desglose.push({
       concepto: "Creación de panel",
       tiempo: "2 horas",
@@ -32,9 +32,9 @@ export function calcularTiempoPSTMicrosoft(
     });
   }
 
-  // 2. USUARIOS - 5 minutos por usuario 
+  // 2. USUARIOS - 1 minuto por usuario - RENOMBRADO
   if (state.cantidadUsuarios > 0) {
-    const minutosUsuarios = state.cantidadUsuarios * 5;
+    const minutosUsuarios = state.cantidadUsuarios * 1;
     totalMinutos += minutosUsuarios;
     const horas = Math.floor(minutosUsuarios / 60);
     const minutos = minutosUsuarios % 60;
@@ -48,7 +48,7 @@ export function calcularTiempoPSTMicrosoft(
     desglose.push({
       concepto: "Crear usuarios y asignar licencias",
       tiempo: tiempoTexto,
-      detalle: `${state.cantidadUsuarios} usuarios (5 min c/u)`,
+      detalle: `${state.cantidadUsuarios} usuarios (1 min c/u)`,
     });
   }
 

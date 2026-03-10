@@ -47,9 +47,9 @@ export function calcularTiempoTenantTenant(
     });
   }
 
-  // 3. USUARIOS - 5 minutos por usuario 
+  // 3. USUARIOS - 1 minuto por usuario - RENOMBRADO
   if (state.cantidadUsuarios > 0) {
-    const minutosUsuarios = state.cantidadUsuarios * 5;
+    const minutosUsuarios = state.cantidadUsuarios * 1;
     totalMinutos += minutosUsuarios;
     const horas = Math.floor(minutosUsuarios / 60);
     const minutos = minutosUsuarios % 60;
@@ -63,11 +63,11 @@ export function calcularTiempoTenantTenant(
     desglose.push({
       concepto: "Crear usuarios y asignar licencias",
       tiempo: tiempoTexto,
-      detalle: `${state.cantidadUsuarios} usuarios (5 min c/u)`,
+      detalle: `${state.cantidadUsuarios} usuarios (1 min c/u)`,
     });
   }
 
-  // 4. SITIOS DE SHAREPOINT 
+  // 4. SITIOS DE SHAREPOINT (ÚNICA DE ESTE MÓDULO - NO TOCAR)
   if (state.sitiosSharepoint && state.cantidadSitios > 0) {
     const minutosSitios = state.cantidadSitios * 60; // 1 hora por sitio
     totalMinutos += minutosSitios;
@@ -82,7 +82,7 @@ export function calcularTiempoTenantTenant(
     });
   }
 
-  // 5. CONFIGURACIÓN DE PERMISOS
+  // 5. CONFIGURACIÓN DE PERMISOS (ÚNICA DE ESTE MÓDULO - NO TOCAR)
   if (
     state.sitiosSharepoint &&
     state.configuracionPermisos &&
@@ -111,7 +111,7 @@ export function calcularTiempoTenantTenant(
 
   // CONFIGURACIONES ADICIONALES
 
-  // 7. SEGURIDAD - Listas Blanca/Negra 
+  // 7. SEGURIDAD - Listas Blanca/Negra - MODIFICADO: 1 min por dominio
   if (state.listasBlancaNegra && state.cantidadDominiosListas > 0) {
     const minutosListas = state.cantidadDominiosListas * 1;
     totalMinutos += minutosListas;
@@ -133,7 +133,7 @@ export function calcularTiempoTenantTenant(
     });
   }
 
-  // 8. SEGURIDAD - Listas de Distribución 
+  // 8. SEGURIDAD - Listas de Distribución - NUEVO
   if (state.listasDistribucion && state.cantidadListasDistribucion > 0) {
     const minutosDistribucion = state.cantidadListasDistribucion * 15;
     totalMinutos += minutosDistribucion;
@@ -155,7 +155,7 @@ export function calcularTiempoTenantTenant(
     });
   }
 
-  // 9. SEGURIDAD - Bloqueo de IPs 
+  // 9. SEGURIDAD - Bloqueo de IPs (NO TOCAR)
   if (state.bloqueoIPs && state.cantidadIPs > 0) {
     const minutosIPs = state.cantidadIPs * 5;
     totalMinutos += minutosIPs;
@@ -195,7 +195,7 @@ export function calcularTiempoTenantTenant(
     });
   }
 
-  // 11. HERRAMIENTAS 
+  // 11. HERRAMIENTAS (ÚNICA DE ESTE MÓDULO - NO TOCAR)
   if (state.herramientaNativa) {
     totalMinutos += 180; // 3 horas
     desglose.push({
@@ -212,7 +212,7 @@ export function calcularTiempoTenantTenant(
     });
   }
 
-  // ALMACENAMIENTO 
+  // ALMACENAMIENTO - SIN LICENCIAS
 
   // 12. CREAR POLÍTICAS DE RETENCIÓN
   if (state.crearPoliticasRetencion) {
@@ -223,7 +223,7 @@ export function calcularTiempoTenantTenant(
     });
   }
 
-  // 13. POLÍTICAS DE RETENCIÓN (usuarios)
+  // 13. POLÍTICAS DE RETENCIÓN (usuarios) - RENOMBRADO
   if (state.politicasRetencion && state.usuariosPoliticasRetencion > 0) {
     const minutosPolRet = state.usuariosPoliticasRetencion * 5;
     totalMinutos += minutosPolRet;
@@ -263,7 +263,7 @@ export function calcularTiempoTenantTenant(
     });
   }
 
-  // 15. AUTO-EXPANDING ARCHIVADO 
+  // 15. AUTO-EXPANDING ARCHIVADO - SIN VERIFICACIÓN DE LICENCIA
   if (state.autoExpandingArchivado && state.usuariosAutoExpanding > 0) {
     const minutosAutoExp = state.usuariosAutoExpanding * 5;
     totalMinutos += minutosAutoExp;
@@ -283,7 +283,7 @@ export function calcularTiempoTenantTenant(
     });
   }
 
-  // 16. FORZAR ARCHIVADO 
+  // 16. FORZAR ARCHIVADO - NUEVO
   if (state.forzarArchivado && state.usuariosForzarArchivado > 0) {
     const minutosForzar = state.usuariosForzarArchivado * 1;
     totalMinutos += minutosForzar;
