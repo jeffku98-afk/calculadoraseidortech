@@ -25,24 +25,12 @@ export interface MicrosoftGoogleState {
   cantidadReglas: number;
   mostrarAdvertenciaReglas: boolean; // Para el modal
   
-  // ALMACENAMIENTO - SIN LICENCIAS (igual que Google→Microsoft)
-  // Opciones de Retención y Archivado
-  crearPoliticasRetencion: boolean;
-  politicasRetencion: boolean;
-  usuariosPoliticasRetencion: number;
-  habilitarArchivado: boolean;
-  usuariosArchivado: number;
-  
-  // Auto-expanding archivado (siempre disponible)
-  autoExpandingArchivado: boolean;
-  usuariosAutoExpanding: number;
-  
-  // Forzar archivado
-  forzarArchivado: boolean;
-  usuariosForzarArchivado: number;
-  
-  // Monitoreo de usuarios 
+  // Monitoreo de usuarios
   monitoreoUsuarios: number;
+  
+  // Informe de Migración
+  informeMigracion: boolean;
+  frecuenciaInforme: "semanal" | "mensual";
 }
 
 interface MicrosoftGoogleActions {
@@ -57,16 +45,9 @@ interface MicrosoftGoogleActions {
   setCrearReglas: (crear: boolean) => void;
   setCantidadReglas: (cantidad: number) => void;
   setMostrarAdvertenciaReglas: (mostrar: boolean) => void;
-  setCrearPoliticasRetencion: (crear: boolean) => void;
-  setPoliticasRetencion: (activo: boolean) => void;
-  setUsuariosPoliticasRetencion: (cantidad: number) => void;
-  setHabilitarArchivado: (activo: boolean) => void;
-  setUsuariosArchivado: (cantidad: number) => void;
-  setAutoExpandingArchivado: (activo: boolean) => void;
-  setUsuariosAutoExpanding: (cantidad: number) => void;
-  setForzarArchivado: (activo: boolean) => void;
-  setUsuariosForzarArchivado: (cantidad: number) => void;
   setMonitoreoUsuarios: (cantidad: number) => void;
+  setInformeMigracion: (activo: boolean) => void;
+  setFrecuenciaInforme: (frecuencia: "semanal" | "mensual") => void;
   reset: () => void;
 }
 
@@ -82,16 +63,9 @@ const initialState: MicrosoftGoogleState = {
   crearReglas: false,
   cantidadReglas: 0,
   mostrarAdvertenciaReglas: false,
-  crearPoliticasRetencion: false,
-  politicasRetencion: false,
-  usuariosPoliticasRetencion: 0,
-  habilitarArchivado: false,
-  usuariosArchivado: 0,
-  autoExpandingArchivado: false,
-  usuariosAutoExpanding: 0,
-  forzarArchivado: false,
-  usuariosForzarArchivado: 0,
   monitoreoUsuarios: 0,
+  informeMigracion: false,
+  frecuenciaInforme: "semanal",
 };
 
 export const useMicrosoftGoogleStore = create<
@@ -110,19 +84,8 @@ export const useMicrosoftGoogleStore = create<
   setCrearReglas: (crearReglas) => set({ crearReglas }),
   setCantidadReglas: (cantidadReglas) => set({ cantidadReglas }),
   setMostrarAdvertenciaReglas: (mostrarAdvertenciaReglas) => set({ mostrarAdvertenciaReglas }),
-  setCrearPoliticasRetencion: (crearPoliticasRetencion) =>
-    set({ crearPoliticasRetencion }),
-  setPoliticasRetencion: (politicasRetencion) => set({ politicasRetencion }),
-  setUsuariosPoliticasRetencion: (usuariosPoliticasRetencion) =>
-    set({ usuariosPoliticasRetencion }),
-  setHabilitarArchivado: (habilitarArchivado) => set({ habilitarArchivado }),
-  setUsuariosArchivado: (usuariosArchivado) => set({ usuariosArchivado }),
-  setAutoExpandingArchivado: (autoExpandingArchivado) =>
-    set({ autoExpandingArchivado }),
-  setUsuariosAutoExpanding: (usuariosAutoExpanding) =>
-    set({ usuariosAutoExpanding }),
-  setForzarArchivado: (forzarArchivado) => set({ forzarArchivado }),
-  setUsuariosForzarArchivado: (usuariosForzarArchivado) => set({ usuariosForzarArchivado }),
   setMonitoreoUsuarios: (monitoreoUsuarios) => set({ monitoreoUsuarios }),
+  setInformeMigracion: (informeMigracion) => set({ informeMigracion }),
+  setFrecuenciaInforme: (frecuenciaInforme) => set({ frecuenciaInforme }),
   reset: () => set(initialState),
 }));

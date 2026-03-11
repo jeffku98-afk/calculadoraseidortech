@@ -14,7 +14,7 @@ export interface GoogleMicrosoftState {
   configuracionTenant: "bittitan" | "nativa";
   
   // CONFIGURACIONES ADICIONALES
-  // Seguridad 
+  // Seguridad - MODIFICADO
   listasBlancaNegra: boolean;
   cantidadDominiosListas: number; // 1 min por dominio
   listasDistribucion: boolean;
@@ -23,7 +23,7 @@ export interface GoogleMicrosoftState {
   // Reglas
   crearReglas: boolean;
   cantidadReglas: number;
-  mostrarAdvertenciaReglas: boolean; 
+  mostrarAdvertenciaReglas: boolean; // Para el modal
   
   // ALMACENAMIENTO
   // Opciones de Retención y Archivado
@@ -37,12 +37,16 @@ export interface GoogleMicrosoftState {
   autoExpandingArchivado: boolean;
   usuariosAutoExpanding: number;
   
-  // Forzar archivado
+  // NUEVO: Forzar archivado
   forzarArchivado: boolean;
   usuariosForzarArchivado: number;
   
   // Monitoreo de usuarios
   monitoreoUsuarios: number;
+  
+  // Informe de Migración - NUEVO
+  informeMigracion: boolean;
+  frecuenciaInforme: "semanal" | "mensual";
 }
 
 interface GoogleMicrosoftActions {
@@ -67,6 +71,8 @@ interface GoogleMicrosoftActions {
   setForzarArchivado: (activo: boolean) => void;
   setUsuariosForzarArchivado: (cantidad: number) => void;
   setMonitoreoUsuarios: (cantidad: number) => void;
+  setInformeMigracion: (activo: boolean) => void;
+  setFrecuenciaInforme: (frecuencia: "semanal" | "mensual") => void;
   reset: () => void;
 }
 
@@ -92,6 +98,8 @@ const initialState: GoogleMicrosoftState = {
   forzarArchivado: false,
   usuariosForzarArchivado: 0,
   monitoreoUsuarios: 0,
+  informeMigracion: false,
+  frecuenciaInforme: "semanal",
 };
 
 export const useGoogleMicrosoftStore = create<
@@ -124,5 +132,7 @@ export const useGoogleMicrosoftStore = create<
   setForzarArchivado: (forzarArchivado) => set({ forzarArchivado }),
   setUsuariosForzarArchivado: (usuariosForzarArchivado) => set({ usuariosForzarArchivado }),
   setMonitoreoUsuarios: (monitoreoUsuarios) => set({ monitoreoUsuarios }),
+  setInformeMigracion: (informeMigracion) => set({ informeMigracion }),
+  setFrecuenciaInforme: (frecuenciaInforme) => set({ frecuenciaInforme }),
   reset: () => set(initialState),
 }));

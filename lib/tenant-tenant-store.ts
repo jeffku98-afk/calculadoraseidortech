@@ -10,31 +10,31 @@ export interface TenantTenantState {
   // Usuarios
   cantidadUsuarios: number;
   
-  // Sitios de SharePoint (ÚNICA DE ESTE MÓDULO - NO TOCAR)
+  // Sitios de SharePoint (ÚNICA DE ESTE MÓDULO)
   sitiosSharepoint: boolean;
   cantidadSitios: number;
   configuracionPermisos: boolean;
-  usuariosPorSitio: number;
+  // ELIMINADO: usuariosPorSitio (ahora es 5 min por sitio)
   
   // CONFIGURACIONES ADICIONALES
-  // Seguridad - MODIFICADO
+  // Seguridad
   listasBlancaNegra: boolean;
-  cantidadDominiosListas: number; // NUEVO: 1 min por dominio
-  listasDistribucion: boolean; // NUEVO
-  cantidadListasDistribucion: number; // NUEVO: 15 min por lista
+  cantidadDominiosListas: number; // 1 min por dominio
+  listasDistribucion: boolean;
+  cantidadListasDistribucion: number; // 15 min por lista
   bloqueoIPs: boolean;
   cantidadIPs: number;
   
   // Reglas
   crearReglas: boolean;
   cantidadReglas: number;
-  mostrarAdvertenciaReglas: boolean; // NUEVO: Para el modal
+  mostrarAdvertenciaReglas: boolean; // Para el modal
   
-  // Herramientas (ÚNICA DE ESTE MÓDULO - NO TOCAR)
+  // Herramientas (ÚNICA DE ESTE MÓDULO)
   herramientaNativa: boolean;
   usarShareGate: boolean;
   
-  // ALMACENAMIENTO - SIN LICENCIAS (como Google→Microsoft y Microsoft→Google)
+  // ALMACENAMIENTO - SIN LICENCIAS
   // Opciones de Retención y Archivado
   crearPoliticasRetencion: boolean;
   politicasRetencion: boolean;
@@ -42,13 +42,17 @@ export interface TenantTenantState {
   habilitarArchivado: boolean;
   usuariosArchivado: number;
   
-  // Auto-expanding archivado (siempre disponible)
+  // Auto-expanding archivado
   autoExpandingArchivado: boolean;
   usuariosAutoExpanding: number;
   
-  // Forzar archivado - NUEVO
+  // Forzar archivado
   forzarArchivado: boolean;
   usuariosForzarArchivado: number;
+  
+  // Informe de Migración - NUEVO
+  informeMigracion: boolean;
+  frecuenciaInforme: "semanal" | "mensual";
 }
 
 interface TenantTenantActions {
@@ -58,16 +62,15 @@ interface TenantTenantActions {
   setSitiosSharepoint: (activo: boolean) => void;
   setCantidadSitios: (cantidad: number) => void;
   setConfiguracionPermisos: (activo: boolean) => void;
-  setUsuariosPorSitio: (cantidad: number) => void;
   setListasBlancaNegra: (activo: boolean) => void;
-  setCantidadDominiosListas: (cantidad: number) => void; // NUEVO
-  setListasDistribucion: (activo: boolean) => void; // NUEVO
-  setCantidadListasDistribucion: (cantidad: number) => void; // NUEVO
+  setCantidadDominiosListas: (cantidad: number) => void;
+  setListasDistribucion: (activo: boolean) => void;
+  setCantidadListasDistribucion: (cantidad: number) => void;
   setBloqueoIPs: (activo: boolean) => void;
   setCantidadIPs: (cantidad: number) => void;
   setCrearReglas: (crear: boolean) => void;
   setCantidadReglas: (cantidad: number) => void;
-  setMostrarAdvertenciaReglas: (mostrar: boolean) => void; // NUEVO
+  setMostrarAdvertenciaReglas: (mostrar: boolean) => void;
   setHerramientaNativa: (activo: boolean) => void;
   setUsarShareGate: (activo: boolean) => void;
   setCrearPoliticasRetencion: (crear: boolean) => void;
@@ -77,8 +80,10 @@ interface TenantTenantActions {
   setUsuariosArchivado: (cantidad: number) => void;
   setAutoExpandingArchivado: (activo: boolean) => void;
   setUsuariosAutoExpanding: (cantidad: number) => void;
-  setForzarArchivado: (activo: boolean) => void; // NUEVO
-  setUsuariosForzarArchivado: (cantidad: number) => void; // NUEVO
+  setForzarArchivado: (activo: boolean) => void;
+  setUsuariosForzarArchivado: (cantidad: number) => void;
+  setInformeMigracion: (activo: boolean) => void;
+  setFrecuenciaInforme: (frecuencia: "semanal" | "mensual") => void;
   reset: () => void;
 }
 
@@ -89,16 +94,15 @@ const initialState: TenantTenantState = {
   sitiosSharepoint: false,
   cantidadSitios: 0,
   configuracionPermisos: false,
-  usuariosPorSitio: 0,
   listasBlancaNegra: false,
-  cantidadDominiosListas: 0, // NUEVO
-  listasDistribucion: false, // NUEVO
-  cantidadListasDistribucion: 0, // NUEVO
+  cantidadDominiosListas: 0,
+  listasDistribucion: false,
+  cantidadListasDistribucion: 0,
   bloqueoIPs: false,
   cantidadIPs: 0,
   crearReglas: false,
   cantidadReglas: 0,
-  mostrarAdvertenciaReglas: false, // NUEVO
+  mostrarAdvertenciaReglas: false,
   herramientaNativa: false,
   usarShareGate: false,
   crearPoliticasRetencion: false,
@@ -108,8 +112,10 @@ const initialState: TenantTenantState = {
   usuariosArchivado: 0,
   autoExpandingArchivado: false,
   usuariosAutoExpanding: 0,
-  forzarArchivado: false, // NUEVO
-  usuariosForzarArchivado: 0, // NUEVO
+  forzarArchivado: false,
+  usuariosForzarArchivado: 0,
+  informeMigracion: false,
+  frecuenciaInforme: "semanal",
 };
 
 export const useTenantTenantStore = create<
@@ -123,16 +129,15 @@ export const useTenantTenantStore = create<
   setSitiosSharepoint: (sitiosSharepoint) => set({ sitiosSharepoint }),
   setCantidadSitios: (cantidadSitios) => set({ cantidadSitios }),
   setConfiguracionPermisos: (configuracionPermisos) => set({ configuracionPermisos }),
-  setUsuariosPorSitio: (usuariosPorSitio) => set({ usuariosPorSitio }),
   setListasBlancaNegra: (listasBlancaNegra) => set({ listasBlancaNegra }),
-  setCantidadDominiosListas: (cantidadDominiosListas) => set({ cantidadDominiosListas }), // NUEVO
-  setListasDistribucion: (listasDistribucion) => set({ listasDistribucion }), // NUEVO
-  setCantidadListasDistribucion: (cantidadListasDistribucion) => set({ cantidadListasDistribucion }), // NUEVO
+  setCantidadDominiosListas: (cantidadDominiosListas) => set({ cantidadDominiosListas }),
+  setListasDistribucion: (listasDistribucion) => set({ listasDistribucion }),
+  setCantidadListasDistribucion: (cantidadListasDistribucion) => set({ cantidadListasDistribucion }),
   setBloqueoIPs: (bloqueoIPs) => set({ bloqueoIPs }),
   setCantidadIPs: (cantidadIPs) => set({ cantidadIPs }),
   setCrearReglas: (crearReglas) => set({ crearReglas }),
   setCantidadReglas: (cantidadReglas) => set({ cantidadReglas }),
-  setMostrarAdvertenciaReglas: (mostrarAdvertenciaReglas) => set({ mostrarAdvertenciaReglas }), // NUEVO
+  setMostrarAdvertenciaReglas: (mostrarAdvertenciaReglas) => set({ mostrarAdvertenciaReglas }),
   setHerramientaNativa: (herramientaNativa) => set({ herramientaNativa }),
   setUsarShareGate: (usarShareGate) => set({ usarShareGate }),
   setCrearPoliticasRetencion: (crearPoliticasRetencion) =>
@@ -146,7 +151,9 @@ export const useTenantTenantStore = create<
     set({ autoExpandingArchivado }),
   setUsuariosAutoExpanding: (usuariosAutoExpanding) =>
     set({ usuariosAutoExpanding }),
-  setForzarArchivado: (forzarArchivado) => set({ forzarArchivado }), // NUEVO
-  setUsuariosForzarArchivado: (usuariosForzarArchivado) => set({ usuariosForzarArchivado }), // NUEVO
+  setForzarArchivado: (forzarArchivado) => set({ forzarArchivado }),
+  setUsuariosForzarArchivado: (usuariosForzarArchivado) => set({ usuariosForzarArchivado }),
+  setInformeMigracion: (informeMigracion) => set({ informeMigracion }),
+  setFrecuenciaInforme: (frecuenciaInforme) => set({ frecuenciaInforme }),
   reset: () => set(initialState),
 }));

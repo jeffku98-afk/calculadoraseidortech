@@ -150,98 +150,7 @@ export function calcularTiempoMicrosoftGoogle(
     });
   }
 
-  // ALMACENAMIENTO - SIN LICENCIAS (igual que Google→Microsoft)
-
-  // 8. CREAR POLÍTICAS DE RETENCIÓN
-  if (state.crearPoliticasRetencion) {
-    totalMinutos += 60; // 1 hora
-    desglose.push({
-      concepto: "Crear políticas de retención",
-      tiempo: "1 hora",
-    });
-  }
-
-  // 9. POLÍTICAS DE RETENCIÓN (usuarios)
-  if (state.politicasRetencion && state.usuariosPoliticasRetencion > 0) {
-    const minutosPolRet = state.usuariosPoliticasRetencion * 5;
-    totalMinutos += minutosPolRet;
-    const horas = Math.floor(minutosPolRet / 60);
-    const minutos = minutosPolRet % 60;
-    let tiempoTexto = "";
-    if (horas > 0) {
-      tiempoTexto = `${horas} ${horas === 1 ? "hora" : "horas"}`;
-      if (minutos > 0) tiempoTexto += ` ${minutos} min`;
-    } else {
-      tiempoTexto = `${minutos} min`;
-    }
-    desglose.push({
-      concepto: "Asignar políticas de retención",
-      tiempo: tiempoTexto,
-      detalle: `${state.usuariosPoliticasRetencion} usuarios (5 min c/u)`,
-    });
-  }
-
-  // 10. HABILITAR ARCHIVADO
-  if (state.habilitarArchivado && state.usuariosArchivado > 0) {
-    const minutosArch = state.usuariosArchivado * 5;
-    totalMinutos += minutosArch;
-    const horas = Math.floor(minutosArch / 60);
-    const minutos = minutosArch % 60;
-    let tiempoTexto = "";
-    if (horas > 0) {
-      tiempoTexto = `${horas} ${horas === 1 ? "hora" : "horas"}`;
-      if (minutos > 0) tiempoTexto += ` ${minutos} min`;
-    } else {
-      tiempoTexto = `${minutos} min`;
-    }
-    desglose.push({
-      concepto: "Habilitar archivado",
-      tiempo: tiempoTexto,
-      detalle: `${state.usuariosArchivado} usuarios (5 min c/u)`,
-    });
-  }
-
-  // 11. AUTO-EXPANDING ARCHIVADO - SIN VERIFICACIÓN DE LICENCIA
-  if (state.autoExpandingArchivado && state.usuariosAutoExpanding > 0) {
-    const minutosAutoExp = state.usuariosAutoExpanding * 5;
-    totalMinutos += minutosAutoExp;
-    const horas = Math.floor(minutosAutoExp / 60);
-    const minutos = minutosAutoExp % 60;
-    let tiempoTexto = "";
-    if (horas > 0) {
-      tiempoTexto = `${horas} ${horas === 1 ? "hora" : "horas"}`;
-      if (minutos > 0) tiempoTexto += ` ${minutos} min`;
-    } else {
-      tiempoTexto = `${minutos} min`;
-    }
-    desglose.push({
-      concepto: "Auto-expanding archivado",
-      tiempo: tiempoTexto,
-      detalle: `${state.usuariosAutoExpanding} usuarios (5 min c/u)`,
-    });
-  }
-
-  // 12. FORZAR ARCHIVADO
-  if (state.forzarArchivado && state.usuariosForzarArchivado > 0) {
-    const minutosForzar = state.usuariosForzarArchivado * 1;
-    totalMinutos += minutosForzar;
-    const horas = Math.floor(minutosForzar / 60);
-    const minutos = minutosForzar % 60;
-    let tiempoTexto = "";
-    if (horas > 0) {
-      tiempoTexto = `${horas} ${horas === 1 ? "hora" : "horas"}`;
-      if (minutos > 0) tiempoTexto += ` ${minutos} min`;
-    } else {
-      tiempoTexto = `${minutos} min`;
-    }
-    desglose.push({
-      concepto: "Forzar archivado",
-      tiempo: tiempoTexto,
-      detalle: `${state.usuariosForzarArchivado} usuarios (1 min c/u)`,
-    });
-  }
-
-  // 13. MONITOREO DE USUARIOS - NUEVO
+  // 8. MONITOREO DE USUARIOS
   if (state.monitoreoUsuarios > 0) {
     const minutosMonitoreo = state.monitoreoUsuarios * 10;
     totalMinutos += minutosMonitoreo;
@@ -258,6 +167,16 @@ export function calcularTiempoMicrosoftGoogle(
       concepto: "Monitoreo de usuarios",
       tiempo: tiempoTexto,
       detalle: `${state.monitoreoUsuarios} usuarios (10 min c/u)`,
+    });
+  }
+
+  // 9. INFORME DE MIGRACIÓN - NUEVO
+  if (state.informeMigracion) {
+    totalMinutos += 60; // 1 hora por informe
+    desglose.push({
+      concepto: "Informe de migración",
+      tiempo: "1 hora",
+      detalle: `Frecuencia: ${state.frecuenciaInforme}`,
     });
   }
 

@@ -9,12 +9,18 @@ export interface PSTMicrosoftState {
   
   // Tamaño máximo (referencial)
   tamanoMaximoGB: number;
+  
+  // Informe de Migración - NUEVO
+  informeMigracion: boolean;
+  frecuenciaInforme: "semanal" | "mensual";
 }
 
 interface PSTMicrosoftActions {
   setPanel: (panel: "crear" | "existente") => void;
   setCantidadUsuarios: (cantidad: number) => void;
   setTamanoMaximoGB: (tamano: number) => void;
+  setInformeMigracion: (activo: boolean) => void;
+  setFrecuenciaInforme: (frecuencia: "semanal" | "mensual") => void;
   reset: () => void;
 }
 
@@ -22,6 +28,8 @@ const initialState: PSTMicrosoftState = {
   panel: "crear",
   cantidadUsuarios: 0,
   tamanoMaximoGB: 0,
+  informeMigracion: false,
+  frecuenciaInforme: "semanal",
 };
 
 export const usePSTMicrosoftStore = create<
@@ -32,5 +40,7 @@ export const usePSTMicrosoftStore = create<
   setPanel: (panel) => set({ panel }),
   setCantidadUsuarios: (cantidadUsuarios) => set({ cantidadUsuarios }),
   setTamanoMaximoGB: (tamanoMaximoGB) => set({ tamanoMaximoGB }),
+  setInformeMigracion: (informeMigracion) => set({ informeMigracion }),
+  setFrecuenciaInforme: (frecuenciaInforme) => set({ frecuenciaInforme }),
   reset: () => set(initialState),
 }));

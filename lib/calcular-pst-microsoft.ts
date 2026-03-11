@@ -52,6 +52,18 @@ export function calcularTiempoPSTMicrosoft(
     });
   }
 
+  // NOTA: El tamaño máximo es solo referencial, no se suma al tiempo
+
+  // 3. INFORME DE MIGRACIÓN - NUEVO
+  if (state.informeMigracion) {
+    totalMinutos += 60; // 1 hora por informe
+    desglose.push({
+      concepto: "Informe de migración",
+      tiempo: "1 hora",
+      detalle: `Frecuencia: ${state.frecuenciaInforme}`,
+    });
+  }
+
   const horas = Math.floor(totalMinutos / 60);
   const minutos = totalMinutos % 60;
 

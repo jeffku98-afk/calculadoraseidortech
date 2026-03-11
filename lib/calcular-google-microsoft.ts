@@ -261,6 +261,16 @@ export function calcularTiempoGoogleMicrosoft(
     });
   }
 
+  // 14. INFORME DE MIGRACIÓN - NUEVO
+  if (state.informeMigracion) {
+    totalMinutos += 60; // 1 hora por informe
+    desglose.push({
+      concepto: "Informe de migración",
+      tiempo: "1 hora",
+      detalle: `Frecuencia: ${state.frecuenciaInforme}`,
+    });
+  }
+
   const horas = Math.floor(totalMinutos / 60);
   const minutos = totalMinutos % 60;
 

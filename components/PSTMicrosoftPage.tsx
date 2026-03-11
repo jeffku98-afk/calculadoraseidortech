@@ -7,6 +7,7 @@ import {
   Input,
   RadioGroup,
   Radio,
+  Switch,
   Button,
   Divider,
 } from "@nextui-org/react";
@@ -187,6 +188,49 @@ export function PSTMicrosoftPage() {
                   tomará la migración.
                 </p>
               </div>
+            </CardBody>
+          </Card>
+
+          {/* INFORME DE MIGRACIÓN - NUEVO */}
+          <Card>
+            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
+              <div>
+                <h2 className="text-xl font-bold">Informe de Migración</h2>
+                <p className="text-sm opacity-90">
+                  1 hora por informe
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody className="space-y-4">
+              <Switch
+                isSelected={state.informeMigracion}
+                onValueChange={state.setInformeMigracion}
+              >
+                <div>
+                  <p className="font-semibold text-seidor-400">
+                    Generar informe de migración
+                  </p>
+                  <p className="text-sm text-seidor-500">
+                    Informe detallado del proceso de migración
+                  </p>
+                </div>
+              </Switch>
+
+              {state.informeMigracion && (
+                <div className="ml-6">
+                  <RadioGroup
+                    label="Frecuencia del informe"
+                    value={state.frecuenciaInforme}
+                    onValueChange={(value) =>
+                      state.setFrecuenciaInforme(value as "semanal" | "mensual")
+                    }
+                    size="sm"
+                  >
+                    <Radio value="semanal">Semanal</Radio>
+                    <Radio value="mensual">Mensual</Radio>
+                  </RadioGroup>
+                </div>
+              )}
             </CardBody>
           </Card>
 

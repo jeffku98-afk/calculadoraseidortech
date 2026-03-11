@@ -5,9 +5,9 @@ import {
   CardBody,
   CardHeader,
   Input,
-  Switch,
   RadioGroup,
   Radio,
+  Switch,
   Button,
   Divider,
   Modal,
@@ -34,7 +34,7 @@ export function TenantTenantPage() {
       minutos: resultado.minutos,
       desglose: resultado.desglose,
       disclaimer:
-        "El proceso es gradual y puede tardar días o semanas en buzones muy grandes. Los tiempos pueden variar según la complejidad de la configuración y el volumen de datos a migrar.",
+        "El proceso es gradual y puede tardar días o semanas en buzones muy grandes.",
       userName: session?.user?.name ?? undefined,
       userEmail: session?.user?.email ?? undefined,
     });
@@ -43,26 +43,32 @@ export function TenantTenantPage() {
   // Handler para mostrar advertencia antes de activar reglas
   const handleToggleReglas = (value: boolean) => {
     if (value && !state.crearReglas) {
-      // Mostrar modal de advertencia
       state.setMostrarAdvertenciaReglas(true);
     } else {
-      // Desactivar directamente
       state.setCrearReglas(false);
       state.setCantidadReglas(0);
     }
   };
 
-  // Handler para confirmar creación de reglas
   const handleConfirmarReglas = () => {
     state.setCrearReglas(true);
     state.setMostrarAdvertenciaReglas(false);
   };
 
-  // Handler para cancelar creación de reglas
   const handleCancelarReglas = () => {
     state.setCrearReglas(false);
     state.setMostrarAdvertenciaReglas(false);
   };
+
+  const handleToggleShareGate = (value: boolean) => {
+  state.setUsarShareGate(value);
+  
+  if (!value) {
+    state.setSitiosSharepoint(false);
+    state.setConfiguracionPermisos(false);
+    state.setCantidadSitios(0);
+  }
+};
 
   return (
     <div className="flex-1 p-8 bg-gray-50">
@@ -88,7 +94,7 @@ export function TenantTenantPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Formulario */}
         <div className="lg:col-span-2 space-y-6">
-          {/* 1. PANEL - MODIFICADO: 2 horas */}
+          {/* 1. PANEL */}
           <Card>
             <CardHeader className="pb-3">
               <div>
@@ -131,7 +137,7 @@ export function TenantTenantPage() {
               <Input
                 type="number"
                 label="Cantidad de dominios"
-                placeholder="Ej: 2"
+                placeholder="Ej: 5"
                 value={state.cantidadDominios.toString()}
                 onValueChange={(value) =>
                   state.setCantidadDominios(parseInt(value) || 0)
@@ -140,16 +146,14 @@ export function TenantTenantPage() {
                 className="max-w-xs"
                 description={
                   state.cantidadDominios > 0
-                    ? `${state.cantidadDominios} ${
-                        state.cantidadDominios === 1 ? "hora" : "horas"
-                      }`
+                    ? `${state.cantidadDominios} ${state.cantidadDominios === 1 ? 'hora' : 'horas'} total`
                     : ""
                 }
               />
             </CardBody>
           </Card>
 
-          {/* 3. USUARIOS - RENOMBRADO */}
+          {/* 3. USUARIOS */}
           <Card>
             <CardHeader className="pb-3">
               <div>
@@ -181,36 +185,101 @@ export function TenantTenantPage() {
             </CardBody>
           </Card>
 
-          {/* 4. SITIOS DE SHAREPOINT - ÚNICA DE ESTE MÓDULO */}
-          <Card>
-            <CardHeader className="pb-3">
+          {/* 4. HERRAMIENTAS - REORGANIZADO: ShareGate PRIMERO */}
+           <Card>
+            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
               <div>
-                <h3 className="text-lg font-semibold text-seidor-400">
-                  Sitios de SharePoint
-                </h3>
-                <p className="text-sm text-seidor-500">
-                  Migración de sitios y configuración de permisos
+                <h2 className="text-xl font-bold">Herramientas</h2>
+                <p className="text-sm opacity-90">
+                  Selecciona las herramientas a utilizar
                 </p>
               </div>
             </CardHeader>
             <CardBody className="space-y-4">
-              <Switch
-                isSelected={state.sitiosSharepoint}
-                onValueChange={state.setSitiosSharepoint}
-              >
-                <div>
-                  <p className="font-semibold text-seidor-400">
-                    Migrar sitios de SharePoint
-                  </p>
-                  <p className="text-sm text-seidor-500">
-                    1 hora por cada sitio
+              <div className="space-y-2">
+                <Switch
+                  isSelected={state.usarShareGate}
+                  onValueChange={handleToggleShareGate}
+                >
+                  <div>
+                    <p className="font-semibold text-seidor-400">ShareGate</p>
+                    <p className="text-sm text-seidor-500">Habilita migración de sitios de SharePoint</p>
+                  </div>
+                </Switch>
+              </div>
+
+              <div className="space-y-2">
+                <Switch
+                  isSelected={state.herramientaNativa}
+                  onValueChange={state.setHerramientaNativa}
+                >
+                  <div>
+                    <p className="font-semibold text-seidor-400">
+                      Herramienta nativa de Microsoft
+                    </p>
+                    <p className="text-sm text-seidor-500">3 horas</p>
+                  </div>
+                </Switch>
+              </div>
+            </CardBody>
+          </Card>
+
+          {/* 5. SITIOS DE SHAREPOINT - Controlado por ShareGate */}
+          <Card className="border-2 border-green-200">
+            <CardHeader className="bg-green-50 pb-3">
+              <div>
+                <h2 className="text-xl font-bold text-green-800">
+                  Sitios de SharePoint
+                </h2>
+                <p className="text-sm text-green-700">
+                  Migración y configuración de sitios
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody className="space-y-4">
+              {!state.usarShareGate && (
+                <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 rounded">
+                  <p className="text-sm text-yellow-800">
+                    <strong>Nota:</strong> Debes habilitar ShareGate para poder
+                    migrar sitios de SharePoint.
                   </p>
                 </div>
-              </Switch>
+              )}
 
-              {state.sitiosSharepoint && (
-                <div className="ml-6 space-y-4">
+              <div className="space-y-2">
+                <Switch
+                  isSelected={state.sitiosSharepoint}
+                  onValueChange={state.setSitiosSharepoint}
+                  isDisabled={!state.usarShareGate}
+                >
+                  <div>
+                    <p className="font-semibold text-seidor-400">
+                      Migrar sitios de SharePoint
+                    </p>
+                    <p className="text-sm text-seidor-500">3 horas</p>
+                  </div>
+                </Switch>
+              </div>
+
+              {/* Opción 2: Configuración de permisos - SIEMPRE VISIBLE */}
+              <div className="space-y-2">
+                <Switch
+                  isSelected={state.configuracionPermisos}
+                  onValueChange={state.setConfiguracionPermisos}
+                  isDisabled={!state.usarShareGate}
+                >
+                  <div>
+                    <p className="font-semibold text-seidor-400">
+                      Configuración de permisos
+                    </p>
+                    <p className="text-sm text-seidor-500">
+                      5 minutos por sitio
+                    </p>
+                  </div>
+                </Switch>
+                {state.configuracionPermisos && (
                   <Input
+                    size="sm"
                     type="number"
                     label="Cantidad de sitios"
                     placeholder="Ej: 10"
@@ -219,56 +288,15 @@ export function TenantTenantPage() {
                       state.setCantidadSitios(parseInt(value) || 0)
                     }
                     min={0}
-                    className="max-w-xs"
+                    className="ml-6 max-w-xs"
                     description={
                       state.cantidadSitios > 0
-                        ? `${state.cantidadSitios} ${
-                            state.cantidadSitios === 1 ? "hora" : "horas"
-                          }`
+                        ? `${state.cantidadSitios * 5} minutos total`
                         : ""
                     }
                   />
-
-                  <div className="space-y-3">
-                    <Switch
-                      size="sm"
-                      isSelected={state.configuracionPermisos}
-                      onValueChange={state.setConfiguracionPermisos}
-                    >
-                      <div>
-                        <p className="text-sm font-medium text-seidor-400">
-                          Configuración de permisos
-                        </p>
-                        <p className="text-xs text-seidor-500">
-                          5 minutos por usuario por sitio
-                        </p>
-                      </div>
-                    </Switch>
-
-                    {state.configuracionPermisos && (
-                      <Input
-                        size="sm"
-                        type="number"
-                        label="Usuarios por sitio"
-                        placeholder="Ej: 20"
-                        value={state.usuariosPorSitio.toString()}
-                        onValueChange={(value) =>
-                          state.setUsuariosPorSitio(parseInt(value) || 0)
-                        }
-                        min={0}
-                        className="ml-6 max-w-xs"
-                        description={
-                          state.usuariosPorSitio > 0 && state.cantidadSitios > 0
-                            ? `${
-                                state.usuariosPorSitio * state.cantidadSitios * 5
-                              } minutos total`
-                            : ""
-                        }
-                      />
-                    )}
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </CardBody>
           </Card>
 
@@ -280,18 +308,18 @@ export function TenantTenantPage() {
                   Configuraciones Adicionales
                 </h2>
                 <p className="text-sm text-seidor-500">
-                  Seguridad, reglas y herramientas
+                  Seguridad y reglas personalizadas
                 </p>
               </div>
             </CardHeader>
             <CardBody className="space-y-4">
-              {/* SEGURIDAD - MODIFICADO */}
+              {/* SEGURIDAD */}
               <div className="space-y-3">
                 <h3 className="text-md font-semibold text-seidor-400">
                   Seguridad
                 </h3>
                 <div className="bg-seidor-50 p-4 rounded-lg space-y-3">
-                  {/* Listas Blanca/Negra - MODIFICADO */}
+                  {/* Lista Blanca/Negra */}
                   <div className="space-y-2">
                     <Switch
                       size="sm"
@@ -328,7 +356,7 @@ export function TenantTenantPage() {
                     )}
                   </div>
 
-                  {/* Listas de Distribución - NUEVO */}
+                  {/* Listas de Distribución */}
                   <div className="space-y-2">
                     <Switch
                       size="sm"
@@ -367,7 +395,7 @@ export function TenantTenantPage() {
                     )}
                   </div>
 
-                  {/* Bloqueo de IPs - NO TOCAR */}
+                  {/* Bloqueo de IPs */}
                   <div className="space-y-2">
                     <Switch
                       size="sm"
@@ -388,7 +416,7 @@ export function TenantTenantPage() {
                         size="sm"
                         type="number"
                         label="Cantidad de IPs"
-                        placeholder="Ej: 10"
+                        placeholder="Ej: 8"
                         value={state.cantidadIPs.toString()}
                         onValueChange={(value) =>
                           state.setCantidadIPs(parseInt(value) || 0)
@@ -408,7 +436,7 @@ export function TenantTenantPage() {
 
               <Divider />
 
-              {/* CREACIÓN DE REGLAS - CON ADVERTENCIA */}
+              {/* CREACIÓN DE REGLAS */}
               <div>
                 <Switch
                   isSelected={state.crearReglas}
@@ -445,50 +473,10 @@ export function TenantTenantPage() {
                   </div>
                 )}
               </div>
-
-              <Divider />
-
-              {/* HERRAMIENTAS - ÚNICA DE ESTE MÓDULO */}
-              <div className="space-y-3">
-                <h3 className="text-md font-semibold text-seidor-400">
-                  Herramientas
-                </h3>
-                <div className="bg-blue-50 p-4 rounded-lg space-y-3">
-                  <div className="space-y-2">
-                    <Switch
-                      size="sm"
-                      isSelected={state.herramientaNativa}
-                      onValueChange={state.setHerramientaNativa}
-                    >
-                      <div>
-                        <p className="text-sm font-medium text-seidor-400">
-                          Herramienta nativa de Microsoft
-                        </p>
-                        <p className="text-xs text-seidor-500">3 horas</p>
-                      </div>
-                    </Switch>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Switch
-                      size="sm"
-                      isSelected={state.usarShareGate}
-                      onValueChange={state.setUsarShareGate}
-                    >
-                      <div>
-                        <p className="text-sm font-medium text-seidor-400">
-                          ShareGate
-                        </p>
-                        <p className="text-xs text-seidor-500">2 horas</p>
-                      </div>
-                    </Switch>
-                  </div>
-                </div>
-              </div>
             </CardBody>
           </Card>
 
-          {/* ALMACENAMIENTO - SIN LICENCIAS */}
+          {/* ALMACENAMIENTO */}
           <Card>
             <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
               <div>
@@ -517,7 +505,6 @@ export function TenantTenantPage() {
                     </div>
                   </Switch>
 
-                  {/* RENOMBRADO: Asignar políticas de retención */}
                   <div className="space-y-2">
                     <Switch
                       size="sm"
@@ -603,7 +590,7 @@ export function TenantTenantPage() {
                           Auto-expanding archivado
                         </p>
                         <p className="text-xs text-seidor-500">
-                          5 minutos por usuario
+                          2 minutos por usuario
                         </p>
                       </div>
                     </Switch>
@@ -621,14 +608,13 @@ export function TenantTenantPage() {
                         className="ml-6 max-w-xs"
                         description={
                           state.usuariosAutoExpanding > 0
-                            ? `${state.usuariosAutoExpanding * 5} minutos total`
+                            ? `${state.usuariosAutoExpanding * 2} minutos total`
                             : ""
                         }
                       />
                     )}
                   </div>
 
-                  {/* FORZAR ARCHIVADO - NUEVO */}
                   <div className="space-y-2">
                     <Switch
                       size="sm"
@@ -652,7 +638,9 @@ export function TenantTenantPage() {
                         placeholder="Ej: 30"
                         value={state.usuariosForzarArchivado.toString()}
                         onValueChange={(value) =>
-                          state.setUsuariosForzarArchivado(parseInt(value) || 0)
+                          state.setUsuariosForzarArchivado(
+                            parseInt(value) || 0
+                          )
                         }
                         min={0}
                         className="ml-6 max-w-xs"
@@ -666,6 +654,49 @@ export function TenantTenantPage() {
                   </div>
                 </div>
               </div>
+            </CardBody>
+          </Card>
+
+          {/* INFORME DE MIGRACIÓN - NUEVO */}
+          <Card>
+            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
+              <div>
+                <h2 className="text-xl font-bold">Informe de Migración</h2>
+                <p className="text-sm opacity-90">
+                  1 hora por informe
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody className="space-y-4">
+              <Switch
+                isSelected={state.informeMigracion}
+                onValueChange={state.setInformeMigracion}
+              >
+                <div>
+                  <p className="font-semibold text-seidor-400">
+                    Generar informe de migración
+                  </p>
+                  <p className="text-sm text-seidor-500">
+                    Informe detallado del proceso de migración
+                  </p>
+                </div>
+              </Switch>
+
+              {state.informeMigracion && (
+                <div className="ml-6">
+                  <RadioGroup
+                    label="Frecuencia del informe"
+                    value={state.frecuenciaInforme}
+                    onValueChange={(value) =>
+                      state.setFrecuenciaInforme(value as "semanal" | "mensual")
+                    }
+                    size="sm"
+                  >
+                    <Radio value="semanal">Semanal</Radio>
+                    <Radio value="mensual">Mensual</Radio>
+                  </RadioGroup>
+                </div>
+              )}
             </CardBody>
           </Card>
 
@@ -692,9 +723,9 @@ export function TenantTenantPage() {
                   </p>
                   <p className="leading-relaxed">
                     El proceso es gradual y puede tardar días o semanas en
-                    buzones muy grandes. Los tiempos pueden variar según la
-                    complejidad de la configuración y el volumen de datos a
-                    migrar.
+                    buzones muy grandes. Para buzones pequeños (5 - 20 GB): 1 a
+                    2 días, para buzones medianos (20 - 50 GB): 2 a 4 días, y
+                    para buzones grandes (100 GB a más): 5 a 10 días.
                   </p>
                 </div>
               </div>
@@ -760,7 +791,9 @@ export function TenantTenantPage() {
               </CardHeader>
               <CardBody>
                 <div className="text-center py-6">
-                  <div className="text-5xl font-bold mb-2">{resultado.horas}</div>
+                  <div className="text-5xl font-bold mb-2">
+                    {resultado.horas}
+                  </div>
                   <div className="text-xl mb-1">
                     {resultado.horas === 1 ? "hora" : "horas"}
                   </div>

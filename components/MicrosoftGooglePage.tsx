@@ -363,192 +363,13 @@ export function MicrosoftGooglePage() {
             </CardBody>
           </Card>
 
-          {/* ALMACENAMIENTO - SIN LICENCIAS */}
+          {/* MONITOREO DE USUARIOS - NUEVO */}
           <Card>
             <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
               <div>
-                <h2 className="text-xl font-bold">Almacenamiento</h2>
+                <h2 className="text-xl font-bold">Monitoreo de usuarios</h2>
                 <p className="text-sm opacity-90">
-                  Configuración de políticas de retención y archivado
-                </p>
-              </div>
-            </CardHeader>
-            <CardBody className="space-y-4">
-              <div className="space-y-3">
-                <h3 className="text-md font-semibold text-seidor-400">
-                  Opciones de Retención
-                </h3>
-                <div className="bg-seidor-50 p-4 rounded-lg space-y-3">
-                  <Switch
-                    size="sm"
-                    isSelected={state.crearPoliticasRetencion}
-                    onValueChange={state.setCrearPoliticasRetencion}
-                  >
-                    <div>
-                      <p className="text-sm font-medium text-seidor-400">
-                        Crear políticas de retención
-                      </p>
-                      <p className="text-xs text-seidor-500">1 hora</p>
-                    </div>
-                  </Switch>
-
-                  <div className="space-y-2">
-                    <Switch
-                      size="sm"
-                      isSelected={state.politicasRetencion}
-                      onValueChange={state.setPoliticasRetencion}
-                    >
-                      <div>
-                        <p className="text-sm font-medium text-seidor-400">
-                          Asignar políticas de retención
-                        </p>
-                        <p className="text-xs text-seidor-500">
-                          5 minutos por usuario
-                        </p>
-                      </div>
-                    </Switch>
-                    {state.politicasRetencion && (
-                      <Input
-                        size="sm"
-                        type="number"
-                        label="Cantidad de usuarios"
-                        placeholder="Ej: 30"
-                        value={state.usuariosPoliticasRetencion.toString()}
-                        onValueChange={(value) =>
-                          state.setUsuariosPoliticasRetencion(
-                            parseInt(value) || 0
-                          )
-                        }
-                        min={0}
-                        className="ml-6 max-w-xs"
-                        description={
-                          state.usuariosPoliticasRetencion > 0
-                            ? `${state.usuariosPoliticasRetencion * 5} minutos total`
-                            : ""
-                        }
-                      />
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Switch
-                      size="sm"
-                      isSelected={state.habilitarArchivado}
-                      onValueChange={state.setHabilitarArchivado}
-                    >
-                      <div>
-                        <p className="text-sm font-medium text-seidor-400">
-                          Habilitar archivado
-                        </p>
-                        <p className="text-xs text-seidor-500">
-                          5 minutos por usuario
-                        </p>
-                      </div>
-                    </Switch>
-                    {state.habilitarArchivado && (
-                      <Input
-                        size="sm"
-                        type="number"
-                        label="Cantidad de usuarios"
-                        placeholder="Ej: 30"
-                        value={state.usuariosArchivado.toString()}
-                        onValueChange={(value) =>
-                          state.setUsuariosArchivado(parseInt(value) || 0)
-                        }
-                        min={0}
-                        className="ml-6 max-w-xs"
-                        description={
-                          state.usuariosArchivado > 0
-                            ? `${state.usuariosArchivado * 5} minutos total`
-                            : ""
-                        }
-                      />
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Switch
-                      size="sm"
-                      isSelected={state.autoExpandingArchivado}
-                      onValueChange={state.setAutoExpandingArchivado}
-                    >
-                      <div>
-                        <p className="text-sm font-medium text-seidor-400">
-                          Auto-expanding archivado
-                        </p>
-                        <p className="text-xs text-seidor-500">
-                          5 minutos por usuario
-                        </p>
-                      </div>
-                    </Switch>
-                    {state.autoExpandingArchivado && (
-                      <Input
-                        size="sm"
-                        type="number"
-                        label="Cantidad de usuarios"
-                        placeholder="Ej: 30"
-                        value={state.usuariosAutoExpanding.toString()}
-                        onValueChange={(value) =>
-                          state.setUsuariosAutoExpanding(parseInt(value) || 0)
-                        }
-                        min={0}
-                        className="ml-6 max-w-xs"
-                        description={
-                          state.usuariosAutoExpanding > 0
-                            ? `${state.usuariosAutoExpanding * 5} minutos total`
-                            : ""
-                        }
-                      />
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Switch
-                      size="sm"
-                      isSelected={state.forzarArchivado}
-                      onValueChange={state.setForzarArchivado}
-                    >
-                      <div>
-                        <p className="text-sm font-medium text-seidor-400">
-                          Forzar archivado
-                        </p>
-                        <p className="text-xs text-seidor-500">
-                          1 minuto por usuario
-                        </p>
-                      </div>
-                    </Switch>
-                    {state.forzarArchivado && (
-                      <Input
-                        size="sm"
-                        type="number"
-                        label="Cantidad de usuarios"
-                        placeholder="Ej: 30"
-                        value={state.usuariosForzarArchivado.toString()}
-                        onValueChange={(value) =>
-                          state.setUsuariosForzarArchivado(parseInt(value) || 0)
-                        }
-                        min={0}
-                        className="ml-6 max-w-xs"
-                        description={
-                          state.usuariosForzarArchivado > 0
-                            ? `${state.usuariosForzarArchivado} minutos total`
-                            : ""
-                        }
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-
-          {/* MONITOREO DE USUARIOS - NUEVO */}
-          <Card className="border-2 border-blue-200">
-            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
-              <div>
-                <h2 className="text-xl font-bold">Monitoreo de Usuarios</h2>
-                <p className="text-sm opacity-90">
-                  10 minutos por cada usuario monitoreado
+                  10 minutos por usuario monitoreado
                 </p>
               </div>
             </CardHeader>
@@ -569,6 +390,49 @@ export function MicrosoftGooglePage() {
                     : ""
                 }
               />
+            </CardBody>
+          </Card>
+
+          {/* INFORME DE MIGRACIÓN - NUEVO */}
+          <Card>
+            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
+              <div>
+                <h2 className="text-xl font-bold">Informe de Migración</h2>
+                <p className="text-sm opacity-90">
+                  1 hora por informe
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody className="space-y-4">
+              <Switch
+                isSelected={state.informeMigracion}
+                onValueChange={state.setInformeMigracion}
+              >
+                <div>
+                  <p className="font-semibold text-seidor-400">
+                    Generar informe de migración
+                  </p>
+                  <p className="text-sm text-seidor-500">
+                    Informe detallado del proceso de migración
+                  </p>
+                </div>
+              </Switch>
+
+              {state.informeMigracion && (
+                <div className="ml-6">
+                  <RadioGroup
+                    label="Frecuencia del informe"
+                    value={state.frecuenciaInforme}
+                    onValueChange={(value) =>
+                      state.setFrecuenciaInforme(value as "semanal" | "mensual")
+                    }
+                    size="sm"
+                  >
+                    <Radio value="semanal">Semanal</Radio>
+                    <Radio value="mensual">Mensual</Radio>
+                  </RadioGroup>
+                </div>
+              )}
             </CardBody>
           </Card>
 

@@ -67,8 +67,7 @@ export function TiempoMigracionPage() {
                   </p>
                   <p className="text-blue-800 leading-relaxed">
                     El tiempo aproximado de migración dependerá{" "}
-                    <strong>única y exclusivamente</strong> de la velocidad de
-                    internet del cliente.
+                    <strong>única y exclusivamente</strong> del ancho de banda del cliente.
                   </p>
                 </div>
               </div>
@@ -264,7 +263,7 @@ export function TiempoMigracionPage() {
                   Los tiempos estimados son aproximados y pueden variar según
                   las condiciones de red en tiempo real. Se recomienda realizar
                   pruebas previas con muestras pequeñas de datos para validar
-                  los tiempos estimados.
+                  los tiempos.
                 </p>
               </div>
             </div>
