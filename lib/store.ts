@@ -1,28 +1,34 @@
 import { create } from "zustand";
 
-export type MenuItem = "nuevo-tenant" | "migracion" | "backup-acronis" | "tiempo-migracion" | "configuracion-tenant";
+
 export type MigrationType =
   | "google-microsoft"
   | "microsoft-google"
   | "tenant-tenant"
   | "pst-microsoft"
-  | "onpremise-microsoft"
-  | null;
+  | "fileserver-exchange"        
+  | "fileserver-sharepoint"      
+  | "tenant-nuevo"
+  | "configuracion-tenant";
+
+
+export type MenuType =
+  | "nuevo-tenant"
+  | "migracion"
+  | "backup-acronis"
+  | "tiempo-migracion"
+  | "configuracion-tenant";
 
 interface NavigationState {
-  currentMenu: MenuItem;
-  selectedMigration: MigrationType;
-  setCurrentMenu: (menu: MenuItem) => void;
-  setSelectedMigration: (migration: MigrationType) => void;
+  currentMenu: MenuType;
+  selectedMigration: MigrationType | null;
+  setCurrentMenu: (menu: MenuType) => void;
+  setSelectedMigration: (migration: MigrationType | null) => void;
 }
 
 export const useNavigationStore = create<NavigationState>((set) => ({
-  currentMenu: "migracion",
-  selectedMigration: "google-microsoft", // Pre-seleccionado por defecto
-  setCurrentMenu: (menu) =>
-    set({
-      currentMenu: menu,
-      selectedMigration: menu === "migracion" ? "google-microsoft" : null,
-    }),
+  currentMenu: "nuevo-tenant",
+  selectedMigration: null,
+  setCurrentMenu: (menu) => set({ currentMenu: menu, selectedMigration: null }),
   setSelectedMigration: (migration) => set({ selectedMigration: migration }),
 }));

@@ -5,6 +5,7 @@ export interface MigrationOption {
   title: string;
   description: string;
   icon: string;
+  underConstruction?: boolean;
 }
 
 export const migrationOptions: MigrationOption[] = [
@@ -37,10 +38,19 @@ export const migrationOptions: MigrationOption[] = [
     icon: "document",
   },
   {
-    id: "onpremise-microsoft",
-    title: "On Premise a Microsoft",
+    id: "fileserver-exchange",
+    title: "File Server a Exchange",
     description:
-      "Migración de Exchange Server on-premise a Microsoft 365 (Hybrid o Cutover)",
+      "Migración de File Server a Microsoft Exchange (anteriormente On Premise a Microsoft)",
     icon: "server",
+    underConstruction: true, // Módulo en construcción
+  },
+  {
+    id: "fileserver-sharepoint",
+    title: "File Server a SharePoint",
+    description:
+      "Migración de File Server a SharePoint Online",
+    icon: "folder",
+    underConstruction: true, // Módulo en construcción
   },
 ];

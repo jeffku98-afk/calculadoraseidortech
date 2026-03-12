@@ -18,7 +18,6 @@ export default function Home() {
   const { currentMenu, selectedMigration, setSelectedMigration } =
     useNavigationStore();
 
-  // Función para volver a la selección de migraciones
   const handleBackToMigrationSelection = () => {
     setSelectedMigration(null);
   };
@@ -34,15 +33,16 @@ export default function Home() {
           {currentMenu === "migracion" && (
             <>
               {selectedMigration && (
-                <div className="p-4 bg-white border-b border-gray-200">
+                <div className="p-6 bg-gradient-to-r from-seidor-50 to-white">
                   <Button
                     color="primary"
-                    variant="flat"
-                    size="sm"
+                    variant="solid"
+                    size="lg"
                     onPress={handleBackToMigrationSelection}
+                    className="font-semibold shadow-md hover:shadow-lg transition-shadow"
                     startContent={
                       <svg
-                        className="w-4 h-4"
+                        className="w-5 h-5"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -75,14 +75,48 @@ export default function Home() {
               {selectedMigration === "pst-microsoft" && (
                 <PSTMicrosoftPage />
               )}
-              {selectedMigration === "onpremise-microsoft" && (
+              
+              {/* File Server a Exchange - En construcción */}
+              {selectedMigration === "fileserver-exchange" && (
                 <div className="p-8">
-                  <h1 className="text-3xl font-bold text-seidor-400">
-                    On Premise a Microsoft
-                  </h1>
-                  <p className="text-seidor-500 mt-4">
-                    Módulo en construcción...
-                  </p>
+                  <div className="max-w-3xl mx-auto">
+                    <div className="flex items-center gap-3 mb-4">
+                      <h1 className="text-3xl font-bold text-seidor-400">
+                        File Server a Exchange
+                      </h1>
+                      <span className="px-3 py-1 bg-amber-500 text-white text-sm font-semibold rounded-full">
+                        En construcción
+                      </span>
+                    </div>
+                    <p className="text-seidor-500 text-lg">
+                      Este módulo está actualmente en desarrollo.
+                    </p>
+                    <p className="text-gray-600 mt-2">
+                      Próximamente podrás calcular el tiempo de migración de File Server a Microsoft Exchange.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* File Server a SharePoint - En construcción */}
+              {selectedMigration === "fileserver-sharepoint" && (
+                <div className="p-8">
+                  <div className="max-w-3xl mx-auto">
+                    <div className="flex items-center gap-3 mb-4">
+                      <h1 className="text-3xl font-bold text-seidor-400">
+                        File Server a SharePoint
+                      </h1>
+                      <span className="px-3 py-1 bg-amber-500 text-white text-sm font-semibold rounded-full">
+                        En construcción
+                      </span>
+                    </div>
+                    <p className="text-seidor-500 text-lg">
+                      Este módulo está actualmente en desarrollo.
+                    </p>
+                    <p className="text-gray-600 mt-2">
+                      Próximamente podrás calcular el tiempo de migración de File Server a SharePoint Online.
+                    </p>
+                  </div>
                 </div>
               )}
             </>

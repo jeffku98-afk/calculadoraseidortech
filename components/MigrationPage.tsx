@@ -33,16 +33,36 @@ const migrationOptions = [
     color: "from-orange-500 to-orange-600",
   },
   {
-    id: "onpremise-microsoft" as const,
-    title: "On Premise a Microsoft",
-    description: "Migración de Exchange Server a Microsoft 365",
+    id: "fileserver-exchange" as const,
+    title: "File Server a Exchange",
+    description: "Migración de File Server a Microsoft Exchange",
     icon: "🖥️",
     color: "from-red-500 to-red-600",
+    underConstruction: true, // En construcción
+  },
+  {
+    id: "fileserver-sharepoint" as const,
+    title: "File Server a SharePoint",
+    description: "Migración de File Server a SharePoint Online",
+    icon: "📂",
+    color: "from-indigo-500 to-indigo-600",
+    underConstruction: true, // En construcción
   },
 ];
 
 export function MigrationPage() {
   const { selectedMigration, setSelectedMigration } = useNavigationStore();
+
+  const handleCardClick = (optionId: typeof migrationOptions[0]["id"]) => {
+    const option = migrationOptions.find((opt) => opt.id === optionId);
+    
+    // Si está en construcción, no hacer nada
+    if (option?.underConstruction) {
+      return;
+    }
+    
+    setSelectedMigration(optionId);
+  };
 
   return (
     <div className="flex-1 p-8 bg-gray-50">
@@ -68,9 +88,13 @@ export function MigrationPage() {
         {migrationOptions.map((option) => (
           <Card
             key={option.id}
-            isPressable
-            onPress={() => setSelectedMigration(option.id)}
-            className={`transition-all duration-200 hover:scale-105 cursor-pointer ${
+            isPressable={!option.underConstruction}
+            onPress={() => handleCardClick(option.id)}
+            className={`transition-all duration-200 ${
+              option.underConstruction
+                ? "opacity-60 cursor-not-allowed"
+                : "hover:scale-105 cursor-pointer"
+            } ${
               selectedMigration === option.id
                 ? "ring-4 ring-seidor-400 shadow-xl"
                 : "hover:shadow-lg"
@@ -79,16 +103,25 @@ export function MigrationPage() {
             <CardHeader
               className={`bg-gradient-to-r ${option.color} text-white p-6`}
             >
-              <div className="flex items-center gap-3">
-                <span className="text-4xl">{option.icon}</span>
-                <div>
-                  <h3 className="text-xl font-bold">{option.title}</h3>
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-3">
+                  <span className="text-4xl">{option.icon}</span>
+                  <div>
+                    <h3 className="text-xl font-bold">{option.title}</h3>
+                  </div>
                 </div>
+                
+                {/* Badge "En construcción" */}
+                {option.underConstruction && (
+                  <span className="px-3 py-1 bg-amber-500 text-white text-xs font-semibold rounded-full whitespace-nowrap">
+                    En construcción
+                  </span>
+                )}
               </div>
             </CardHeader>
             <CardBody className="p-6">
               <p className="text-seidor-500">{option.description}</p>
-              {selectedMigration === option.id && (
+              {selectedMigration === option.id && !option.underConstruction && (
                 <div className="mt-4 flex items-center gap-2 text-seidor-400 font-semibold">
                   <svg
                     className="w-5 h-5"
@@ -109,7 +142,6 @@ export function MigrationPage() {
         ))}
       </div>
 
-      {/* Información adicional */}
       <div className="mt-8 p-6 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
         <div className="flex items-start gap-3">
           <svg
@@ -131,8 +163,8 @@ export function MigrationPage() {
             </p>
             <p className="text-sm text-blue-800">
               Haz clic en cualquier tarjeta para calcular las horas de
-              operación de ese tipo de migración. Por defecto, "Google a
-              Microsoft" está seleccionado.
+              operación de ese tipo de migración. Las opciones marcadas como
+              "En construcción" estarán disponibles próximamente.
             </p>
           </div>
         </div>
