@@ -19,6 +19,8 @@ export type MenuType =
   | "tiempo-migracion"
   | "configuracion-tenant";
 
+export type MenuItem = MenuType;
+
 interface NavigationState {
   currentMenu: MenuType;
   selectedMigration: MigrationType | null;
