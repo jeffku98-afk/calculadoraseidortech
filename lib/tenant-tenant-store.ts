@@ -22,8 +22,6 @@ export interface TenantTenantState {
   cantidadDominiosListas: number; // 1 min por dominio
   listasDistribucion: boolean;
   cantidadListasDistribucion: number; // 15 min por lista
-  bloqueoIPs: boolean;
-  cantidadIPs: number;
   
   // Reglas
   crearReglas: boolean;
@@ -66,8 +64,6 @@ interface TenantTenantActions {
   setCantidadDominiosListas: (cantidad: number) => void;
   setListasDistribucion: (activo: boolean) => void;
   setCantidadListasDistribucion: (cantidad: number) => void;
-  setBloqueoIPs: (activo: boolean) => void;
-  setCantidadIPs: (cantidad: number) => void;
   setCrearReglas: (crear: boolean) => void;
   setCantidadReglas: (cantidad: number) => void;
   setMostrarAdvertenciaReglas: (mostrar: boolean) => void;
@@ -98,8 +94,6 @@ const initialState: TenantTenantState = {
   cantidadDominiosListas: 0,
   listasDistribucion: false,
   cantidadListasDistribucion: 0,
-  bloqueoIPs: false,
-  cantidadIPs: 0,
   crearReglas: false,
   cantidadReglas: 0,
   mostrarAdvertenciaReglas: false,
@@ -133,8 +127,6 @@ export const useTenantTenantStore = create<
   setCantidadDominiosListas: (cantidadDominiosListas) => set({ cantidadDominiosListas }),
   setListasDistribucion: (listasDistribucion) => set({ listasDistribucion }),
   setCantidadListasDistribucion: (cantidadListasDistribucion) => set({ cantidadListasDistribucion }),
-  setBloqueoIPs: (bloqueoIPs) => set({ bloqueoIPs }),
-  setCantidadIPs: (cantidadIPs) => set({ cantidadIPs }),
   setCrearReglas: (crearReglas) => set({ crearReglas }),
   setCantidadReglas: (cantidadReglas) => set({ cantidadReglas }),
   setMostrarAdvertenciaReglas: (mostrarAdvertenciaReglas) => set({ mostrarAdvertenciaReglas }),

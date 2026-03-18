@@ -158,26 +158,6 @@ export function calcularTiempoTenantTenant(
     });
   }
 
-  // 8. BLOQUEO DE IPs - 5 minutos por IP (ÚNICA DE ESTE MÓDULO - NO TOCAR)
-  if (state.bloqueoIPs && state.cantidadIPs > 0) {
-    const minutosBloqueo = state.cantidadIPs * 5;
-    totalMinutos += minutosBloqueo;
-    const horas = Math.floor(minutosBloqueo / 60);
-    const minutos = minutosBloqueo % 60;
-    let tiempoTexto = "";
-    if (horas > 0) {
-      tiempoTexto = `${horas} ${horas === 1 ? "hora" : "horas"}`;
-      if (minutos > 0) tiempoTexto += ` ${minutos} min`;
-    } else {
-      tiempoTexto = `${minutos} min`;
-    }
-    desglose.push({
-      concepto: "Bloqueo de IPs",
-      tiempo: tiempoTexto,
-      detalle: `${state.cantidadIPs} IPs (5 min c/u)`,
-    });
-  }
-
   // 9. CREACIÓN DE REGLAS - 15 minutos por regla
   if (state.crearReglas && state.cantidadReglas > 0) {
     const minutosReglas = state.cantidadReglas * 15;

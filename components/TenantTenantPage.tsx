@@ -394,43 +394,6 @@ export function TenantTenantPage() {
                       />
                     )}
                   </div>
-
-                  {/* Bloqueo de IPs */}
-                  <div className="space-y-2">
-                    <Switch
-                      size="sm"
-                      isSelected={state.bloqueoIPs}
-                      onValueChange={state.setBloqueoIPs}
-                    >
-                      <div>
-                        <p className="text-sm font-medium text-seidor-400">
-                          Bloqueo de IPs
-                        </p>
-                        <p className="text-xs text-seidor-500">
-                          5 minutos por IP
-                        </p>
-                      </div>
-                    </Switch>
-                    {state.bloqueoIPs && (
-                      <Input
-                        size="sm"
-                        type="number"
-                        label="Cantidad de IPs"
-                        placeholder="Ej: 8"
-                        value={state.cantidadIPs.toString()}
-                        onValueChange={(value) =>
-                          state.setCantidadIPs(parseInt(value) || 0)
-                        }
-                        min={0}
-                        className="ml-6 max-w-xs"
-                        description={
-                          state.cantidadIPs > 0
-                            ? `${state.cantidadIPs * 5} minutos total`
-                            : ""
-                        }
-                      />
-                    )}
-                  </div>
                 </div>
               </div>
 
