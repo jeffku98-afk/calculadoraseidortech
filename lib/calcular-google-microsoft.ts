@@ -203,7 +203,7 @@ export function calcularTiempoGoogleMicrosoft(
 
   // 11. AUTO-EXPANDING ARCHIVADO
   if (state.autoExpandingArchivado && state.usuariosAutoExpanding > 0) {
-    const minutosAutoExp = state.usuariosAutoExpanding * 5;
+    const minutosAutoExp = state.usuariosAutoExpanding * 2;
     totalMinutos += minutosAutoExp;
     const horas = Math.floor(minutosAutoExp / 60);
     const minutos = minutosAutoExp % 60;

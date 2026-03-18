@@ -478,7 +478,7 @@ export function GoogleMicrosoftPage() {
                           Auto-expanding archivado
                         </p>
                         <p className="text-xs text-seidor-500">
-                          5 minutos por usuario
+                          2 minutos por usuario
                         </p>
                       </div>
                     </Switch>
