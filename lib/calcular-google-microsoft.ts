@@ -9,12 +9,17 @@ export interface TiempoCalculado {
     tiempo: string;
     detalle?: string;
   }[];
+  consideraciones: {
+    concepto: string;
+    detalle: string;
+  }[];
 }
 
 export function calcularTiempoGoogleMicrosoft(
   state: GoogleMicrosoftState
 ): TiempoCalculado {
   const desglose: TiempoCalculado["desglose"] = [];
+  const consideraciones: TiempoCalculado["consideraciones"] = [];
   let totalMinutos = 0;
 
   // 1. PANEL - MODIFICADO: Crear ahora es 2 horas
@@ -201,9 +206,9 @@ export function calcularTiempoGoogleMicrosoft(
     });
   }
 
-  // 11. AUTO-EXPANDING ARCHIVADO
+  // 11. AUTO-EXPANDING ARCHIVADO - MODIFICADO: 2 minutos por usuario (antes 5)
   if (state.autoExpandingArchivado && state.usuariosAutoExpanding > 0) {
-    const minutosAutoExp = state.usuariosAutoExpanding * 2;
+    const minutosAutoExp = state.usuariosAutoExpanding * 2; // Cambiado de 5 a 2
     totalMinutos += minutosAutoExp;
     const horas = Math.floor(minutosAutoExp / 60);
     const minutos = minutosAutoExp % 60;
@@ -217,7 +222,7 @@ export function calcularTiempoGoogleMicrosoft(
     desglose.push({
       concepto: "Auto-expanding archivado",
       tiempo: tiempoTexto,
-      detalle: `${state.usuariosAutoExpanding} usuarios (5 min c/u)`,
+      detalle: `${state.usuariosAutoExpanding} usuarios (2 min c/u)`, // Actualizado el texto
     });
   }
 
@@ -271,6 +276,56 @@ export function calcularTiempoGoogleMicrosoft(
     });
   }
 
+  // CONSIDERACIONES ADICIONALES (NO SUMAN TIEMPO)
+  
+  // DRIVE
+  if (state.tamañoDrives > 0) {
+    consideraciones.push({
+      concepto: "Tamaño total a migrar",
+      detalle: `${state.tamañoDrives} GB`
+    });
+  }
+  if (state.drivesExceden1000GB > 0) {
+    consideraciones.push({
+      concepto: "Drives que exceden 1000GB",
+      detalle: `${state.drivesExceden1000GB} cuentas`
+    });
+  }
+
+  // UNIDADES COMPARTIDAS
+  if (state.tamañoUnidadesCompartidas > 0) {
+    consideraciones.push({
+      concepto: "Tamaño total a migrar",
+      detalle: `${state.tamañoUnidadesCompartidas} GB`
+    });
+  }
+  if (state.cantidadUnidadesCompartidas > 0) {
+    consideraciones.push({
+      concepto: "Cantidad a migrar",
+      detalle: `${state.cantidadUnidadesCompartidas} unidades`
+    });
+  }
+
+  // CORREO ELECTRÓNICO
+  if (state.tamañoBuzones > 0) {
+    consideraciones.push({
+      concepto: "Tamaño total de buzones",
+      detalle: `${state.tamañoBuzones} GB`
+    });
+  }
+  if (state.buzonesExceden50GB > 0) {
+    consideraciones.push({
+      concepto: "Buzones que exceden 50GB",
+      detalle: `${state.buzonesExceden50GB} cuentas`
+    });
+  }
+  if (state.listasGruposMigrar > 0) {
+    consideraciones.push({
+      concepto: "Listas y grupos a migrar",
+      detalle: `${state.listasGruposMigrar} listas/grupos`
+    });
+  }
+
   const horas = Math.floor(totalMinutos / 60);
   const minutos = totalMinutos % 60;
 
@@ -279,6 +334,7 @@ export function calcularTiempoGoogleMicrosoft(
     minutos,
     total: totalMinutos,
     desglose,
+    consideraciones,
   };
 }
 

@@ -33,6 +33,8 @@ export function GoogleMicrosoftPage() {
       horas: resultado.horas,
       minutos: resultado.minutos,
       desglose: resultado.desglose,
+      consideraciones: resultado.consideraciones, // Consideraciones adicionales
+      nombreCliente: state.nombreCliente || undefined, // Nombre del cliente
       disclaimer:
         "El proceso es gradual y puede tardar días o semanas en buzones muy grandes. Para buzones pequeños (5 - 20 GB): 1 a 2 días, para buzones medianos (20 - 50 GB): 2 a 4 días, y para buzones grandes (100 GB a más): 5 a 10 días.",
       userName: session?.user?.name ?? undefined,
@@ -90,6 +92,30 @@ export function GoogleMicrosoftPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Formulario */}
         <div className="lg:col-span-2 space-y-6">
+
+          {/* NOMBRE DEL CLIENTE */}
+          <Card>
+            <CardHeader className="pb-3">
+              <div>
+                <h3 className="text-lg font-semibold text-seidor-400">Nombre del Cliente</h3>
+                <p className="text-sm text-seidor-500">
+                  Ingresa el nombre del cliente para este cálculo
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <Input
+                type="text"
+                label="Nombre del cliente"
+                placeholder="Ej: Empresa ABC S.A."
+                value={state.nombreCliente}
+                onValueChange={(value) => state.setNombreCliente(value)}
+                className="max-w-md"
+                description="Este nombre aparecerá en el PDF generado"
+              />
+            </CardBody>
+          </Card>
+
           {/* 1. PANEL */}
           <Card>
             <CardHeader className="pb-3">
@@ -496,7 +522,7 @@ export function GoogleMicrosoftPage() {
                         className="ml-6 max-w-xs"
                         description={
                           state.usuariosAutoExpanding > 0
-                            ? `${state.usuariosAutoExpanding * 5} minutos total`
+                            ? `${state.usuariosAutoExpanding * 2} minutos total`
                             : ""
                         }
                       />
@@ -645,6 +671,191 @@ export function GoogleMicrosoftPage() {
                     para buzones grandes (100 GB a más): 5 a 10 días.
                   </p>
                 </div>
+              </div>
+            </CardBody>
+          </Card>
+
+          {/* CONSIDERACIONES ADICIONALES */}
+          <Card>
+            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
+              <div>
+                <h2 className="text-xl font-bold">Consideraciones Adicionales</h2>
+                <p className="text-sm opacity-90">
+                  Información complementaria (no suma horas)
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody className="p-6 space-y-6">
+              {/* DRIVE */}
+              <div className="space-y-4">
+                <h4 className="font-bold text-seidor-400 flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+                    />
+                  </svg>
+                  DRIVE
+                </h4>
+                
+                <div className="space-y-4">
+                  <Input
+                    type="number"
+                    label="Tamaño total en GB de todos los Drives a migrar"
+                    value={state.tamañoDrives.toString()}
+                    onValueChange={(value) =>
+                      state.setTamañoDrives(parseInt(value) || 0)
+                    }
+                    min="0"
+                    endContent={
+                      <span className="text-gray-500 text-sm">GB</span>
+                    }
+                    className="max-w-md"
+                  />
+                  
+                  <Input
+                    type="number"
+                    label="Drives que exceden 1000GB"
+                    value={state.drivesExceden1000GB.toString()}
+                    onValueChange={(value) =>
+                      state.setDrivesExceden1000GB(parseInt(value) || 0)
+                    }
+                    min="0"
+                    endContent={
+                      <span className="text-gray-500 text-sm">cuentas</span>
+                    }
+                    className="max-w-md"
+                  />
+                </div>
+              </div>
+ 
+              {/* UNIDADES COMPARTIDAS */}
+              <div className="space-y-4">
+                <h4 className="font-bold text-seidor-400 flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
+                    />
+                  </svg>
+                  UNIDADES COMPARTIDAS
+                </h4>
+                
+                <div className="space-y-4">
+                  <Input
+                    type="number"
+                    label="Tamaño total en GB de todas las Unidades Compartidas a migrar"
+                    value={state.tamañoUnidadesCompartidas.toString()}
+                    onValueChange={(value) =>
+                      state.setTamañoUnidadesCompartidas(parseInt(value) || 0)
+                    }
+                    min="0"
+                    endContent={
+                      <span className="text-gray-500 text-sm">GB</span>
+                    }
+                    className="max-w-md"
+                  />
+                  
+                  <Input
+                    type="number"
+                    label="Unidades Compartidas a migrar"
+                    value={state.cantidadUnidadesCompartidas.toString()}
+                    onValueChange={(value) =>
+                      state.setCantidadUnidadesCompartidas(parseInt(value) || 0)
+                    }
+                    min="0"
+                    endContent={
+                      <span className="text-gray-500 text-sm">unidades</span>
+                    }
+                    className="max-w-md"
+                  />
+                </div>
+              </div>
+ 
+              {/* CORREO ELECTRÓNICO */}
+              <div className="space-y-4">
+                <h4 className="font-bold text-seidor-400 flex items-center gap-2">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                  CORREO ELECTRÓNICO
+                </h4>
+                
+                <div className="space-y-4">
+                  <Input
+                    type="number"
+                    label="Tamaño total en GB de todos los buzones a migrar"
+                    value={state.tamañoBuzones.toString()}
+                    onValueChange={(value) =>
+                      state.setTamañoBuzones(parseInt(value) || 0)
+                    }
+                    min="0"
+                    endContent={
+                      <span className="text-gray-500 text-sm">GB</span>
+                    }
+                    className="max-w-md"
+                  />
+                  
+                  <Input
+                    type="number"
+                    label="Buzones que exceden 50GB"
+                    value={state.buzonesExceden50GB.toString()}
+                    onValueChange={(value) =>
+                      state.setBuzonesExceden50GB(parseInt(value) || 0)
+                    }
+                    min="0"
+                    endContent={
+                      <span className="text-gray-500 text-sm">cuentas</span>
+                    }
+                    className="max-w-md"
+                  />
+                  
+                  <Input
+                    type="number"
+                    label="Cantidad de listas y grupos a migrar"
+                    value={state.listasGruposMigrar.toString()}
+                    onValueChange={(value) =>
+                      state.setListasGruposMigrar(parseInt(value) || 0)
+                    }
+                    min="0"
+                    endContent={
+                      <span className="text-gray-500 text-sm">listas/grupos</span>
+                    }
+                    className="max-w-md"
+                  />
+                </div>
+              </div>
+ 
+              {/* Nota informativa */}
+              <div className="p-4 bg-gray-50 border-l-4 border-blue-500 rounded">
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold text-blue-700">ℹ️ Nota:</span> Estas consideraciones son solo informativas y{" "}
+                  <span className="font-semibold">no suman tiempo</span> al cálculo total. Aparecerán en el PDF generado como referencia.
+                </p>
               </div>
             </CardBody>
           </Card>

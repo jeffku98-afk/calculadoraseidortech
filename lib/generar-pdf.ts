@@ -7,15 +7,22 @@ interface DetalleHoras {
   detalle?: string;
 }
 
+interface Consideracion {
+  concepto: string;
+  detalle: string;
+}
+
 interface DatosPDF {
   titulo: string;
   fecha: string;
   horas: number;
   minutos: number;
   desglose: DetalleHoras[];
+  consideraciones?: Consideracion[];
+  nombreCliente?: string;
   disclaimer?: string;
-  userName?: string;   
-  userEmail?: string;    
+  userName?: string;
+  userEmail?: string;
 }
 
 // Función para convertir imagen a base64
@@ -61,9 +68,9 @@ export async function generarPDF(datos: DatosPDF) {
 
   let yPosition = 20;
 
-
+  // ==========================================
   // HEADER - Estilo Opción 3 (Panel Blanco)
-
+  // ==========================================
   
   // Fondo azul degradado simulado
   doc.setFillColor(...colorPrimario);
@@ -127,7 +134,18 @@ export async function generarPDF(datos: DatosPDF) {
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   doc.text(`Fecha: ${datos.fecha}`, 15, yPosition);
-  yPosition += 15;
+  yPosition += 8;
+
+  // Nombre del cliente (si existe)
+  if (datos.nombreCliente) {
+    doc.setTextColor(...colorPrimario);
+    doc.setFontSize(11);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Cliente: ${datos.nombreCliente}`, 15, yPosition);
+    yPosition += 8;
+  }
+  
+  yPosition += 7;
 
   // ==========================================
   // TIEMPO TOTAL - Caja destacada
@@ -191,6 +209,58 @@ export async function generarPDF(datos: DatosPDF) {
         0: { cellWidth: 70 },
         1: { cellWidth: 40 },
         2: { cellWidth: "auto" },
+      },
+      margin: { left: 15, right: 15 },
+    });
+
+    yPosition = (doc as any).lastAutoTable.finalY + 15;
+  }
+
+  // ==========================================
+  // CONSIDERACIONES ADICIONALES (si existen)
+  // ==========================================
+  if (datos.consideraciones && datos.consideraciones.length > 0) {
+    // Verificar si hay espacio suficiente
+    if (yPosition > pageHeight - 80) {
+      doc.addPage();
+      yPosition = 20;
+    }
+
+    // Título de la sección - Usando el mismo estilo que el desglose
+    doc.setTextColor(...colorPrimario);
+    doc.setFontSize(14);
+    doc.setFont("helvetica", "bold");
+    doc.text("CONSIDERACIONES ADICIONALES (Informativo - No suma horas)", 15, yPosition);
+    yPosition += 10;
+
+    // Tabla de consideraciones - CON DOS COLUMNAS ÚTILES
+    const consideracionesData = datos.consideraciones.map(item => [
+      item.concepto,
+      item.detalle
+    ]);
+
+    autoTable(doc, {
+      startY: yPosition,
+      head: [["Concepto", "Detalle"]],
+      body: consideracionesData,
+      theme: "grid",
+      headStyles: {
+        fillColor: colorPrimario,
+        textColor: [255, 255, 255] as [number, number, number],
+        fontSize: 11,
+        fontStyle: "bold",
+        halign: "left",
+      },
+      bodyStyles: {
+        textColor: colorTexto,
+        fontSize: 10,
+      },
+      alternateRowStyles: {
+        fillColor: [245, 247, 250] as [number, number, number],
+      },
+      columnStyles: {
+        0: { cellWidth: 80 },      // Columna "Concepto" 
+        1: { cellWidth: 50 },  // Columna "Detalle" 
       },
       margin: { left: 15, right: 15 },
     });
