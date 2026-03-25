@@ -37,6 +37,7 @@ export function MicrosoftGooglePage() {
         "El proceso es gradual y puede tardar días o semanas en buzones muy grandes. Para buzones pequeños (5 - 20 GB): 1 a 2 días, para buzones medianos (20 - 50 GB): 2 a 4 días, y para buzones grandes (100 GB a más): 5 a 10 días.",
       userName: session?.user?.name ?? undefined,
       userEmail: session?.user?.email ?? undefined,
+      nombreCliente: state.nombreCliente || undefined,
     });
   };
 
@@ -90,6 +91,32 @@ export function MicrosoftGooglePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Formulario */}
         <div className="lg:col-span-2 space-y-6">
+
+          {/* NOMBRE DEL CLIENTE */}
+          <Card>
+            <CardHeader className="pb-3">
+              <div>
+                <h3 className="text-lg font-semibold text-seidor-400">
+                  Nombre del Cliente
+                </h3>
+                <p className="text-sm text-seidor-500">
+                  Ingresa el nombre del cliente para este cálculo
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <Input
+                type="text"
+                label="Nombre del cliente"
+                placeholder="Ej: Empresa ABC S.A."
+                value={state.nombreCliente}
+                onValueChange={(value) => state.setNombreCliente(value)}
+                className="max-w-md"
+                description="Este nombre aparecerá en el PDF generado"
+              />
+            </CardBody>
+          </Card>
+
           {/* 1. PANEL */}
           <Card>
             <CardHeader className="pb-3">

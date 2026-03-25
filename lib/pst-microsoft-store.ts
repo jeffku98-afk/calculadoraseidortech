@@ -13,6 +13,8 @@ export interface PSTMicrosoftState {
   // Informe de Migración - NUEVO
   informeMigracion: boolean;
   frecuenciaInforme: "semanal" | "mensual";
+
+  nombreCliente: string;
 }
 
 interface PSTMicrosoftActions {
@@ -22,6 +24,7 @@ interface PSTMicrosoftActions {
   setInformeMigracion: (activo: boolean) => void;
   setFrecuenciaInforme: (frecuencia: "semanal" | "mensual") => void;
   reset: () => void;
+  setNombreCliente: (nombre: string) => void;
 }
 
 const initialState: PSTMicrosoftState = {
@@ -30,6 +33,7 @@ const initialState: PSTMicrosoftState = {
   tamanoMaximoGB: 0,
   informeMigracion: false,
   frecuenciaInforme: "semanal",
+  nombreCliente: "",
 };
 
 export const usePSTMicrosoftStore = create<
@@ -43,4 +47,5 @@ export const usePSTMicrosoftStore = create<
   setInformeMigracion: (informeMigracion) => set({ informeMigracion }),
   setFrecuenciaInforme: (frecuenciaInforme) => set({ frecuenciaInforme }),
   reset: () => set(initialState),
+  setNombreCliente: (nombreCliente) => set({ nombreCliente }),
 }));

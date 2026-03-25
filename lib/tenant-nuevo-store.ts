@@ -22,6 +22,8 @@ export interface TenantNuevoState {
   crearReglas: boolean;
   cantidadReglas: number;
   mostrarAdvertenciaReglas: boolean; // NUEVO: Para el modal
+
+  nombreCliente: string;
 }
 
 interface TenantNuevoActions {
@@ -36,6 +38,7 @@ interface TenantNuevoActions {
   setCantidadReglas: (cantidad: number) => void;
   setMostrarAdvertenciaReglas: (mostrar: boolean) => void;
   reset: () => void;
+  setNombreCliente: (nombre: string) => void;
 }
 
 const initialState: TenantNuevoState = {
@@ -49,6 +52,7 @@ const initialState: TenantNuevoState = {
   crearReglas: false,
   cantidadReglas: 0,
   mostrarAdvertenciaReglas: false,
+  nombreCliente: "",
 };
 
 export const useTenantNuevoStore = create<TenantNuevoState & TenantNuevoActions>(
@@ -66,5 +70,6 @@ export const useTenantNuevoStore = create<TenantNuevoState & TenantNuevoActions>
     setCantidadReglas: (cantidadReglas) => set({ cantidadReglas }),
     setMostrarAdvertenciaReglas: (mostrarAdvertenciaReglas) => set({ mostrarAdvertenciaReglas }),
     reset: () => set(initialState),
+    setNombreCliente: (nombreCliente) => set({ nombreCliente }),
   })
 );

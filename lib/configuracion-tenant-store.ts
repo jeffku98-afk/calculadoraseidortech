@@ -16,6 +16,8 @@ export interface ConfiguracionTenantState {
   cantidadArchivado: number; // 2 min por usuario
   forzarArchivado: boolean;
   cantidadForzado: number; // 1 min por usuario
+
+  nombreCliente: string;
 }
 
 interface ConfiguracionTenantActions {
@@ -30,6 +32,7 @@ interface ConfiguracionTenantActions {
   setForzarArchivado: (activo: boolean) => void;
   setCantidadForzado: (cantidad: number) => void;
   reset: () => void;
+  setNombreCliente: (nombre: string) => void;
 }
 
 const initialState: ConfiguracionTenantState = {
@@ -43,6 +46,7 @@ const initialState: ConfiguracionTenantState = {
   cantidadArchivado: 0,
   forzarArchivado: false,
   cantidadForzado: 0,
+  nombreCliente: "",
 };
 
 export const useConfiguracionTenantStore = create<
@@ -63,4 +67,5 @@ export const useConfiguracionTenantStore = create<
   setForzarArchivado: (forzarArchivado) => set({ forzarArchivado }),
   setCantidadForzado: (cantidadForzado) => set({ cantidadForzado }),
   reset: () => set(initialState),
+  setNombreCliente: (nombreCliente) => set({ nombreCliente }),
 }));

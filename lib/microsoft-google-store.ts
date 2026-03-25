@@ -31,6 +31,8 @@ export interface MicrosoftGoogleState {
   // Informe de Migración
   informeMigracion: boolean;
   frecuenciaInforme: "semanal" | "mensual";
+
+  nombreCliente: string;
 }
 
 interface MicrosoftGoogleActions {
@@ -49,6 +51,7 @@ interface MicrosoftGoogleActions {
   setInformeMigracion: (activo: boolean) => void;
   setFrecuenciaInforme: (frecuencia: "semanal" | "mensual") => void;
   reset: () => void;
+  setNombreCliente: (nombre: string) => void;
 }
 
 const initialState: MicrosoftGoogleState = {
@@ -66,6 +69,7 @@ const initialState: MicrosoftGoogleState = {
   monitoreoUsuarios: 0,
   informeMigracion: false,
   frecuenciaInforme: "semanal",
+  nombreCliente: "",
 };
 
 export const useMicrosoftGoogleStore = create<
@@ -88,4 +92,5 @@ export const useMicrosoftGoogleStore = create<
   setInformeMigracion: (informeMigracion) => set({ informeMigracion }),
   setFrecuenciaInforme: (frecuenciaInforme) => set({ frecuenciaInforme }),
   reset: () => set(initialState),
+  setNombreCliente: (nombreCliente) => set({ nombreCliente }),
 }));

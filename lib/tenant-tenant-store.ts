@@ -51,6 +51,8 @@ export interface TenantTenantState {
   // Informe de Migración - NUEVO
   informeMigracion: boolean;
   frecuenciaInforme: "semanal" | "mensual";
+
+  nombreCliente: string;
 }
 
 interface TenantTenantActions {
@@ -81,6 +83,7 @@ interface TenantTenantActions {
   setInformeMigracion: (activo: boolean) => void;
   setFrecuenciaInforme: (frecuencia: "semanal" | "mensual") => void;
   reset: () => void;
+  setNombreCliente: (nombre: string) => void;
 }
 
 const initialState: TenantTenantState = {
@@ -110,6 +113,7 @@ const initialState: TenantTenantState = {
   usuariosForzarArchivado: 0,
   informeMigracion: false,
   frecuenciaInforme: "semanal",
+  nombreCliente: "",
 };
 
 export const useTenantTenantStore = create<
@@ -148,4 +152,5 @@ export const useTenantTenantStore = create<
   setInformeMigracion: (informeMigracion) => set({ informeMigracion }),
   setFrecuenciaInforme: (frecuenciaInforme) => set({ frecuenciaInforme }),
   reset: () => set(initialState),
+  setNombreCliente: (nombreCliente) => set({ nombreCliente }),
 }));

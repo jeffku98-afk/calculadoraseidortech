@@ -35,6 +35,7 @@ export function TenantNuevoPage() {
         "Los tiempos son estimaciones basadas en configuraciones estándar. El tiempo real puede variar según la complejidad específica del tenant.",
       userName: session?.user?.name ?? undefined,
       userEmail: session?.user?.email ?? undefined,
+      nombreCliente: state.nombreCliente || undefined,
     });
   };
 
@@ -84,6 +85,32 @@ export function TenantNuevoPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Formulario */}
         <div className="lg:col-span-2 space-y-6">
+
+          {/* NOMBRE DEL CLIENTE */}
+          <Card>
+            <CardHeader className="pb-3">
+              <div>
+                <h3 className="text-lg font-semibold text-seidor-400">
+                  Nombre del Cliente
+                </h3>
+                <p className="text-sm text-seidor-500">
+                  Ingresa el nombre del cliente para este cálculo
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <Input
+                type="text"
+                label="Nombre del cliente"
+                placeholder="Ej: Empresa ABC S.A."
+                value={state.nombreCliente}
+                onValueChange={(value) => state.setNombreCliente(value)}
+                className="max-w-md"
+                description="Este nombre aparecerá en el PDF generado"
+              />
+            </CardBody>
+          </Card>
+          
           {/* 1. CREACIÓN DE TENANT - FIJO */}
           <Card>
             <CardHeader className="pb-3">
