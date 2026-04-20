@@ -46,13 +46,13 @@ const migrationOptions = [
     description: "Migración de File Server a SharePoint Online",
     icon: "📂",
     color: "from-indigo-500 to-indigo-600",
-    underConstruction: true, // En construcción
   },
 ];
 
 export function MigrationPage() {
   const { selectedMigration, setSelectedMigration } = useNavigationStore();
 
+  // Función para manejar clicks en las tarjetas
   const handleCardClick = (optionId: typeof migrationOptions[0]["id"]) => {
     const option = migrationOptions.find((opt) => opt.id === optionId);
     
@@ -142,6 +142,7 @@ export function MigrationPage() {
         ))}
       </div>
 
+      {/* Información adicional */}
       <div className="mt-8 p-6 bg-blue-50 border-l-4 border-blue-500 rounded-lg">
         <div className="flex items-start gap-3">
           <svg

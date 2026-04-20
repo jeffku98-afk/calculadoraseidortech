@@ -5,7 +5,7 @@ export interface MigrationOption {
   title: string;
   description: string;
   icon: string;
-  underConstruction?: boolean;
+  underConstruction?: boolean; // Nuevo: para módulos en construcción
 }
 
 export const migrationOptions: MigrationOption[] = [
@@ -51,6 +51,5 @@ export const migrationOptions: MigrationOption[] = [
     description:
       "Migración de File Server a SharePoint Online",
     icon: "folder",
-    underConstruction: true, // Módulo en construcción
   },
 ];

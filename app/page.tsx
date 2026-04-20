@@ -9,6 +9,7 @@ import { MicrosoftGooglePage } from "@/components/MicrosoftGooglePage";
 import { BackupAcronisPage } from "@/components/BackupAcronisPage";
 import { TenantTenantPage } from "@/components/TenantTenantPage";
 import { PSTMicrosoftPage } from "@/components/PSTMicrosoftPage";
+import { FileServerSharePointPage } from "@/components/FileServerSharePointPage";
 import { TiempoMigracionPage } from "@/components/TiempoMigracionPage";
 import { ConfiguracionTenantPage } from "@/components/ConfiguracionTenantPage";
 import { useNavigationStore } from "@/lib/store";
@@ -18,6 +19,7 @@ export default function Home() {
   const { currentMenu, selectedMigration, setSelectedMigration } =
     useNavigationStore();
 
+  // Función para volver a la selección de migraciones
   const handleBackToMigrationSelection = () => {
     setSelectedMigration(null);
   };
@@ -98,26 +100,9 @@ export default function Home() {
                 </div>
               )}
 
-              {/* File Server a SharePoint - En construcción */}
+              {/* File Server a SharePoint */}
               {selectedMigration === "fileserver-sharepoint" && (
-                <div className="p-8">
-                  <div className="max-w-3xl mx-auto">
-                    <div className="flex items-center gap-3 mb-4">
-                      <h1 className="text-3xl font-bold text-seidor-400">
-                        File Server a SharePoint
-                      </h1>
-                      <span className="px-3 py-1 bg-amber-500 text-white text-sm font-semibold rounded-full">
-                        En construcción
-                      </span>
-                    </div>
-                    <p className="text-seidor-500 text-lg">
-                      Este módulo está actualmente en desarrollo.
-                    </p>
-                    <p className="text-gray-600 mt-2">
-                      Próximamente podrás calcular el tiempo de migración de File Server a SharePoint Online.
-                    </p>
-                  </div>
-                </div>
+                <FileServerSharePointPage />
               )}
             </>
           )}
