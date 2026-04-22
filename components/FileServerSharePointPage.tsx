@@ -125,15 +125,15 @@ export function FileServerSharePointPage() {
             </CardBody>
           </Card>
 
-          {/* CREACIÓN DE SITIOS */}
+          {/* CREACIÓN DE SITIOS Y CARGA DE DATA */}
           <Card>
             <CardHeader className="pb-3">
               <div>
                 <h3 className="text-lg font-semibold text-seidor-400">
-                  Creación de Sitios
+                  Creación de sitios y carga de data
                 </h3>
                 <p className="text-sm text-seidor-500">
-                  5 minutos por sitio + 15 minutos de permisos y monitoreo
+                  5 min por sitio + 15 min permisos + 15 min carga de data
                 </p>
               </div>
             </CardHeader>
@@ -150,7 +150,7 @@ export function FileServerSharePointPage() {
                 className="max-w-md"
                 description={
                   state.cantidadSitios > 0
-                    ? `${state.cantidadSitios * 20} minutos total (5 min creación + 15 min permisos/monitoreo por sitio)`
+                    ? `${state.cantidadSitios * 35} minutos total (5 min creación + 15 min permisos + 15 min carga de data por sitio)`
                     : ""
                 }
               />
@@ -161,8 +161,9 @@ export function FileServerSharePointPage() {
                     <ul className="space-y-1 ml-4">
                       <li>• Creación del sitio: 5 minutos</li>
                       <li>• Permisos, seguimiento y monitoreo: 15 minutos</li>
+                      <li>• Carga de data: 15 minutos</li>
                       <li className="font-semibold text-seidor-400">
-                        Total por sitio: 20 minutos
+                        Total por sitio: 35 minutos
                       </li>
                     </ul>
                   </div>

@@ -46,7 +46,7 @@ export function calcularTiempoFileServerSharePoint(
       tiempoTexto = `${minutos} min`;
     }
     desglose.push({
-      concepto: "Creación de Sitios",
+      concepto: "Creación de sitios",
       tiempo: tiempoTexto,
       detalle: `${state.cantidadSitios} ${
         state.cantidadSitios === 1 ? "sitio" : "sitios"
@@ -69,6 +69,28 @@ export function calcularTiempoFileServerSharePoint(
     }
     desglose.push({
       concepto: "Permisos, Seguimiento y monitoreo de sitios",
+      tiempo: tiempoTexto,
+      detalle: `${state.cantidadSitios} ${
+        state.cantidadSitios === 1 ? "sitio" : "sitios"
+      } (15 min c/u)`,
+    });
+  }
+
+  // 4. CARGA DE DATA - 15 minutos por sitio
+  if (state.cantidadSitios > 0) {
+    const minutosCarga = state.cantidadSitios * 15;
+    totalMinutos += minutosCarga;
+    const horas = Math.floor(minutosCarga / 60);
+    const minutos = minutosCarga % 60;
+    let tiempoTexto = "";
+    if (horas > 0) {
+      tiempoTexto = `${horas} ${horas === 1 ? "hora" : "horas"}`;
+      if (minutos > 0) tiempoTexto += ` ${minutos} min`;
+    } else {
+      tiempoTexto = `${minutos} min`;
+    }
+    desglose.push({
+      concepto: "Carga de data",
       tiempo: tiempoTexto,
       detalle: `${state.cantidadSitios} ${
         state.cantidadSitios === 1 ? "sitio" : "sitios"
