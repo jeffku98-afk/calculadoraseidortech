@@ -16,6 +16,15 @@ export interface GoogleMicrosoftState {
   // Nombre del Cliente
   nombreCliente: string;
   
+  // Incremental de buzones por semana (GB) - Solo informativo
+  incrementalBuzonesSemana: number;
+  
+  // Calculadora BitTitan
+  pesoTotalMigracion: number;
+  unidadPesoMigracion: "GB" | "TB";
+  cantidadUsuariosMigracion: number;
+  incluirTiempoMigracion: boolean; // Nuevo: para incluir en tiempo total
+  
   // CONFIGURACIONES ADICIONALES
   // Seguridad - MODIFICADO
   listasBlancaNegra: boolean;
@@ -51,6 +60,7 @@ export interface GoogleMicrosoftState {
   informeMigracion: boolean;
   frecuenciaInforme: "semanal" | "mensual";
 
+  // CONSIDERACIONES ADICIONALES - NO SUMAN HORAS
   // DRIVE
   tamañoDrives: number;
   drivesExceden1000GB: number;
@@ -71,6 +81,11 @@ interface GoogleMicrosoftActions {
   setCantidadUsuarios: (cantidad: number) => void;
   setConfiguracionTenant: (config: "bittitan" | "nativa") => void;
   setNombreCliente: (nombre: string) => void;
+  setIncrementalBuzonesSemana: (gb: number) => void;
+  setPesoTotalMigracion: (peso: number) => void;
+  setUnidadPesoMigracion: (unidad: "GB" | "TB") => void;
+  setCantidadUsuariosMigracion: (cantidad: number) => void;
+  setIncluirTiempoMigracion: (incluir: boolean) => void;
   setListasBlancaNegra: (activo: boolean) => void;
   setCantidadDominiosListas: (cantidad: number) => void;
   setListasDistribucion: (activo: boolean) => void;
@@ -90,6 +105,8 @@ interface GoogleMicrosoftActions {
   setMonitoreoUsuarios: (cantidad: number) => void;
   setInformeMigracion: (activo: boolean) => void;
   setFrecuenciaInforme: (frecuencia: "semanal" | "mensual") => void;
+  
+  // Consideraciones Adicionales
   setTamañoDrives: (value: number) => void;
   setDrivesExceden1000GB: (value: number) => void;
   setTamañoUnidadesCompartidas: (value: number) => void;
@@ -107,6 +124,11 @@ const initialState: GoogleMicrosoftState = {
   cantidadUsuarios: 0,
   configuracionTenant: "bittitan",
   nombreCliente: "",
+  incrementalBuzonesSemana: 0,
+  pesoTotalMigracion: 0,
+  unidadPesoMigracion: "GB",
+  cantidadUsuariosMigracion: 0,
+  incluirTiempoMigracion: false,
   listasBlancaNegra: false,
   cantidadDominiosListas: 0,
   listasDistribucion: false,
@@ -126,6 +148,8 @@ const initialState: GoogleMicrosoftState = {
   monitoreoUsuarios: 0,
   informeMigracion: false,
   frecuenciaInforme: "semanal",
+  
+  // Consideraciones Adicionales
   tamañoDrives: 0,
   drivesExceden1000GB: 0,
   tamañoUnidadesCompartidas: 0,
@@ -145,6 +169,11 @@ export const useGoogleMicrosoftStore = create<
   setCantidadUsuarios: (cantidadUsuarios) => set({ cantidadUsuarios }),
   setConfiguracionTenant: (configuracionTenant) => set({ configuracionTenant }),
   setNombreCliente: (nombreCliente) => set({ nombreCliente }),
+  setIncrementalBuzonesSemana: (incrementalBuzonesSemana) => set({ incrementalBuzonesSemana }),
+  setPesoTotalMigracion: (pesoTotalMigracion) => set({ pesoTotalMigracion }),
+  setUnidadPesoMigracion: (unidadPesoMigracion) => set({ unidadPesoMigracion }),
+  setCantidadUsuariosMigracion: (cantidadUsuariosMigracion) => set({ cantidadUsuariosMigracion }),
+  setIncluirTiempoMigracion: (incluirTiempoMigracion) => set({ incluirTiempoMigracion }),
   setListasBlancaNegra: (listasBlancaNegra) => set({ listasBlancaNegra }),
   setCantidadDominiosListas: (cantidadDominiosListas) => set({ cantidadDominiosListas }),
   setListasDistribucion: (listasDistribucion) => set({ listasDistribucion }),
@@ -168,6 +197,8 @@ export const useGoogleMicrosoftStore = create<
   setMonitoreoUsuarios: (monitoreoUsuarios) => set({ monitoreoUsuarios }),
   setInformeMigracion: (informeMigracion) => set({ informeMigracion }),
   setFrecuenciaInforme: (frecuenciaInforme) => set({ frecuenciaInforme }),
+  
+  // Consideraciones Adicionales
   setTamañoDrives: (tamañoDrives) => set({ tamañoDrives }),
   setDrivesExceden1000GB: (drivesExceden1000GB) => set({ drivesExceden1000GB }),
   setTamañoUnidadesCompartidas: (tamañoUnidadesCompartidas) => set({ tamañoUnidadesCompartidas }),

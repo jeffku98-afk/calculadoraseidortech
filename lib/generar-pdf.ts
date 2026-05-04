@@ -177,43 +177,107 @@ export async function generarPDF(datos: DatosPDF) {
   yPosition += cajaAltura + 15;
 
   // ==========================================
-  // TABLA DE DESGLOSE
+  // TABLA DE DESGLOSE - HORAS DE OPERACIÓN
   // ==========================================
   if (datos.desglose.length > 0) {
-    const tableData = datos.desglose.map(item => [
-      item.concepto,
-      item.tiempo,
-      item.detalle || ""
-    ]);
+    // Separar horas de operación y tiempo de migración BitTitan
+    const horasOperacion = datos.desglose.filter(
+      item => !item.concepto.includes("BitTitan")
+    );
+    const tiempoBitTitan = datos.desglose.filter(
+      item => item.concepto.includes("BitTitan")
+    );
 
-    autoTable(doc, {
-      startY: yPosition,
-      head: [["Concepto", "Tiempo", "Detalle"]],
-      body: tableData,
-      theme: "grid",
-      headStyles: {
-        fillColor: colorPrimario,
-        textColor: [255, 255, 255] as [number, number, number],
-        fontSize: 11,
-        fontStyle: "bold",
-        halign: "left",
-      },
-      bodyStyles: {
-        textColor: colorTexto,
-        fontSize: 10,
-      },
-      alternateRowStyles: {
-        fillColor: [245, 247, 250] as [number, number, number],
-      },
-      columnStyles: {
-        0: { cellWidth: 70 },
-        1: { cellWidth: 40 },
-        2: { cellWidth: "auto" },
-      },
-      margin: { left: 15, right: 15 },
-    });
+    // Tabla de horas de operación (sin BitTitan)
+    if (horasOperacion.length > 0) {
+      const tableData = horasOperacion.map(item => [
+        item.concepto,
+        item.tiempo,
+        item.detalle || ""
+      ]);
 
-    yPosition = (doc as any).lastAutoTable.finalY + 15;
+      autoTable(doc, {
+        startY: yPosition,
+        head: [["Concepto", "Tiempo", "Detalle"]],
+        body: tableData,
+        theme: "grid",
+        headStyles: {
+          fillColor: colorPrimario,
+          textColor: [255, 255, 255] as [number, number, number],
+          fontSize: 11,
+          fontStyle: "bold",
+          halign: "left",
+        },
+        bodyStyles: {
+          textColor: colorTexto,
+          fontSize: 10,
+        },
+        alternateRowStyles: {
+          fillColor: [245, 247, 250] as [number, number, number],
+        },
+        columnStyles: {
+          0: { cellWidth: 70 },
+          1: { cellWidth: 40 },
+          2: { cellWidth: "auto" },
+        },
+        margin: { left: 15, right: 15 },
+      });
+
+      yPosition = (doc as any).lastAutoTable.finalY + 15;
+    }
+
+    // ==========================================
+    // TABLA DE TIEMPO DE MIGRACIÓN BITTITAN (si existe)
+    // ==========================================
+    if (tiempoBitTitan.length > 0) {
+      // Verificar si hay espacio suficiente
+      if (yPosition > pageHeight - 80) {
+        doc.addPage();
+        yPosition = 20;
+      }
+
+      // Título de la sección
+      doc.setTextColor(99, 102, 241); // Color índigo
+      doc.setFontSize(14);
+      doc.setFont("helvetica", "bold");
+      doc.text("TIEMPO DE MIGRACIÓN (BitTitan)", 15, yPosition);
+      yPosition += 10;
+
+      const tableBitTitan = tiempoBitTitan.map(item => [
+        item.concepto,
+        item.tiempo,
+        item.detalle || ""
+      ]);
+
+      autoTable(doc, {
+        startY: yPosition,
+        head: [["Concepto", "Tiempo", "Detalle"]],
+        body: tableBitTitan,
+        theme: "grid",
+        headStyles: {
+          fillColor: [99, 102, 241] as [number, number, number], // Color índigo
+          textColor: [255, 255, 255] as [number, number, number],
+          fontSize: 11,
+          fontStyle: "bold",
+          halign: "left",
+        },
+        bodyStyles: {
+          textColor: colorTexto,
+          fontSize: 10,
+        },
+        alternateRowStyles: {
+          fillColor: [238, 242, 255] as [number, number, number], // Índigo muy claro
+        },
+        columnStyles: {
+          0: { cellWidth: 70 },
+          1: { cellWidth: 40 },
+          2: { cellWidth: "auto" },
+        },
+        margin: { left: 15, right: 15 },
+      });
+
+      yPosition = (doc as any).lastAutoTable.finalY + 15;
+    }
   }
 
   // ==========================================
@@ -260,7 +324,7 @@ export async function generarPDF(datos: DatosPDF) {
       },
       columnStyles: {
         0: { cellWidth: 80 },      // Columna "Concepto" 
-        1: { cellWidth: 50 },  // Columna "Detalle" 
+        1: { cellWidth: "auto" },  // Columna "Detalle" 
       },
       margin: { left: 15, right: 15 },
     });

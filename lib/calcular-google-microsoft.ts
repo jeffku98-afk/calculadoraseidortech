@@ -326,6 +326,41 @@ export function calcularTiempoGoogleMicrosoft(
     });
   }
 
+  // TIEMPO DE MIGRACIÓN BITTITAN (si está habilitado para incluir)
+  if (state.configuracionTenant === "bittitan" && state.incluirTiempoMigracion && state.pesoTotalMigracion > 0) {
+    // Convertir peso a MB
+    const pesoEnMB = state.unidadPesoMigracion === "TB" 
+      ? state.pesoTotalMigracion * 1024 * 1024 
+      : state.pesoTotalMigracion * 1024;
+    
+    // Velocidad fija: 750 MB/hora
+    const velocidadMBPorHora = 750;
+    
+    // Calcular horas de migración
+    const horasMigracion = pesoEnMB / velocidadMBPorHora;
+    const minutosMigracion = Math.round(horasMigracion * 60);
+    
+    totalMinutos += minutosMigracion;
+    
+    const horasMigracionFormato = Math.floor(horasMigracion);
+    const minutosMigracionFormato = Math.round((horasMigracion - horasMigracionFormato) * 60);
+    const diasMigracion = (horasMigracion / 24).toFixed(1);
+    
+    let tiempoTexto = "";
+    if (horasMigracionFormato > 0) {
+      tiempoTexto = `${horasMigracionFormato} ${horasMigracionFormato === 1 ? "hora" : "horas"}`;
+      if (minutosMigracionFormato > 0) tiempoTexto += ` ${minutosMigracionFormato} min`;
+    } else {
+      tiempoTexto = `${minutosMigracionFormato} min`;
+    }
+    
+    desglose.push({
+      concepto: "Tiempo de migración BitTitan",
+      tiempo: tiempoTexto,
+      detalle: `${state.pesoTotalMigracion} ${state.unidadPesoMigracion} a 750 MB/hora (${diasMigracion} días aprox.)`
+    });
+  }
+
   const horas = Math.floor(totalMinutos / 60);
   const minutos = totalMinutos % 60;
 

@@ -92,7 +92,6 @@ export function GoogleMicrosoftPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Formulario */}
         <div className="lg:col-span-2 space-y-6">
-
           {/* NOMBRE DEL CLIENTE */}
           <Card>
             <CardHeader className="pb-3">
@@ -604,7 +603,9 @@ export function GoogleMicrosoftPage() {
           <Card>
             <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
               <div>
-                <h2 className="text-xl font-bold">Informe de Migración</h2>
+                <h2 className="text-xl font-bold">
+                  Informe de Migración
+                </h2>
                 <p className="text-sm opacity-90">
                   1 hora por informe
                 </p>
@@ -735,7 +736,7 @@ export function GoogleMicrosoftPage() {
                   />
                 </div>
               </div>
- 
+
               {/* UNIDADES COMPARTIDAS */}
               <div className="space-y-4">
                 <h4 className="font-bold text-seidor-400 flex items-center gap-2">
@@ -785,7 +786,7 @@ export function GoogleMicrosoftPage() {
                   />
                 </div>
               </div>
- 
+
               {/* CORREO ELECTRÓNICO */}
               <div className="space-y-4">
                 <h4 className="font-bold text-seidor-400 flex items-center gap-2">
@@ -849,7 +850,7 @@ export function GoogleMicrosoftPage() {
                   />
                 </div>
               </div>
- 
+
               {/* Nota informativa */}
               <div className="p-4 bg-gray-50 border-l-4 border-blue-500 rounded">
                 <p className="text-sm text-gray-700">
@@ -859,6 +860,175 @@ export function GoogleMicrosoftPage() {
               </div>
             </CardBody>
           </Card>
+
+          {/* INCREMENTAL DE BUZONES POR SEMANA */}
+          <Card>
+            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
+              <div>
+                <h2 className="text-xl font-bold">Incremental de buzones por semana</h2>
+                <p className="text-sm opacity-90">
+                  Información complementaria (no suma horas)
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody className="p-6">
+              <Input
+                type="number"
+                label="Incremental semanal en GB"
+                value={state.incrementalBuzonesSemana.toString()}
+                onValueChange={(value) =>
+                  state.setIncrementalBuzonesSemana(parseInt(value) || 0)
+                }
+                min="0"
+                endContent={
+                  <span className="text-gray-500 text-sm">GB/semana</span>
+                }
+                className="max-w-md"
+                description="Este dato es solo informativo y no afecta el cálculo de horas"
+              />
+            </CardBody>
+          </Card>
+
+          {/* CALCULADORA BITTITAN - Solo visible cuando BitTitan está seleccionado */}
+          {state.configuracionTenant === "bittitan" && (
+            <Card className="border-2 border-indigo-100">
+              <CardHeader className="bg-gradient-to-r from-indigo-400 to-indigo-300 text-white">
+                <div>
+                  <h2 className="text-xl font-bold flex items-center gap-2">
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
+                    </svg>
+                    Calculadora BitTitan
+                  </h2>
+                  <p className="text-sm opacity-90">
+                    Estimación de tiempo de migración
+                  </p>
+                </div>
+              </CardHeader>
+              <CardBody className="p-6 space-y-6">
+                {/* Switch para incluir en tiempo total */}
+                <div className="pb-4 border-b border-gray-200">
+                  <Switch
+                    isSelected={state.incluirTiempoMigracion}
+                    onValueChange={state.setIncluirTiempoMigracion}
+                  >
+                    <div>
+                      <p className="font-semibold text-indigo-700">
+                        Incluir tiempo de migración en el total
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Si se activa, este tiempo se sumará al cálculo total y aparecerá en el PDF
+                      </p>
+                    </div>
+                  </Switch>
+                </div>
+
+                {/* Input de peso total */}
+                <div className="space-y-4">
+                  <div className="flex gap-2">
+                    <Input
+                      type="number"
+                      label="Peso total a migrar"
+                      value={state.pesoTotalMigracion.toString()}
+                      onValueChange={(value) =>
+                        state.setPesoTotalMigracion(parseFloat(value) || 0)
+                      }
+                      min="0"
+                      step="0.1"
+                      className="flex-1"
+                    />
+                    <div className="w-24">
+                      <select
+                        value={state.unidadPesoMigracion}
+                        onChange={(e) =>
+                          state.setUnidadPesoMigracion(e.target.value as "GB" | "TB")
+                        }
+                        className="w-full h-[56px] px-3 rounded-lg border-2 border-gray-300 focus:border-indigo-500 focus:outline-none bg-white text-sm"
+                      >
+                        <option value="GB">GB</option>
+                        <option value="TB">TB</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Resultados de cálculo */}
+                  {state.pesoTotalMigracion > 0 && (() => {
+                    // Convertir todo a MB para cálculos
+                    const pesoEnMB = state.unidadPesoMigracion === "TB" 
+                      ? state.pesoTotalMigracion * 1024 * 1024 
+                      : state.pesoTotalMigracion * 1024;
+                    
+                    // Velocidad fija BitTitan: 750 MB/hora
+                    const velocidadMBPorHora = 750; // MB/hora
+                    const velocidadGBPorHora = velocidadMBPorHora / 1024; // GB/hora
+                    
+                    // Tiempo estimado
+                    const horasEstimadas = pesoEnMB / velocidadMBPorHora;
+                    const diasEstimados = horasEstimadas / 24;
+                    
+                    return (
+                      <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-lg space-y-3">
+                        <h4 className="font-bold text-indigo-800 mb-3">Resultados del cálculo:</h4>
+                        
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between items-center p-2 bg-white rounded">
+                            <span className="text-gray-600">Velocidad BitTitan:</span>
+                            <span className="font-semibold text-indigo-700">
+                              {velocidadGBPorHora.toFixed(2)} GB/hora
+                            </span>
+                          </div>
+                          
+                          <Divider className="my-3" />
+                          
+                          <div className="p-3 bg-indigo-600 text-white rounded-lg">
+                            <div className="text-xs opacity-90 mb-1">Tiempo estimado:</div>
+                            <div className="text-2xl font-bold">
+                              {horasEstimadas.toFixed(1)} horas
+                            </div>
+                            <div className="text-sm opacity-90 mt-1">
+                              ({diasEstimados.toFixed(1)} días)
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="text-xs text-indigo-700 bg-indigo-50 p-3 rounded mt-3">
+                          <strong>📌 Nota:</strong> Basado en velocidad de 750 MB/hora según documentación oficial de BitTitan.
+                          {state.incluirTiempoMigracion ? (
+                            <span className="block mt-1 font-semibold text-indigo-800">
+                              ✓ Este tiempo se sumará al total de horas operativas.
+                            </span>
+                          ) : (
+                            <span className="block mt-1">
+                              Este tiempo es solo referencial y no se suma al total.
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Info adicional */}
+                <div className="p-4 bg-indigo-50 border-l-4 border-indigo-400 rounded">
+                  <p className="text-sm text-indigo-900">
+                    <span className="font-semibold">ℹ️ Información:</span> Esta calculadora utiliza la velocidad promedio
+                    de BitTitan de <strong>750 MB por hora</strong> (0.73 GB/hora). Los tiempos son estimados y
+                    pueden variar según las condiciones de red.
+                  </p>
+                </div>
+              </CardBody>
+            </Card>
+          )}
 
           {/* Botones de acción */}
           <div className="flex gap-3">
@@ -1004,7 +1174,7 @@ export function GoogleMicrosoftPage() {
           </ModalBody>
           <ModalFooter>
             <Button
-              color="danger"
+              color="default"
               variant="flat"
               onPress={handleCancelarReglas}
             >
