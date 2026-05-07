@@ -933,7 +933,7 @@ export function GoogleMicrosoftPage() {
                   </Switch>
                 </div>
 
-                {/* Input de peso total */}
+                {/* Inputs de peso total y cantidad de usuarios */}
                 <div className="space-y-4">
                   <div className="flex gap-2">
                     <Input
@@ -961,10 +961,25 @@ export function GoogleMicrosoftPage() {
                     </div>
                   </div>
 
+                  <Input
+                    type="number"
+                    label="Cantidad de usuarios"
+                    value={state.cantidadUsuariosMigracion.toString()}
+                    onValueChange={(value) =>
+                      state.setCantidadUsuariosMigracion(parseInt(value) || 0)
+                    }
+                    min="0"
+                    endContent={
+                      <span className="text-gray-500 text-sm">usuarios</span>
+                    }
+                    description="BitTitan migra en paralelo - el peso se reparte entre usuarios"
+                    className="max-w-md"
+                  />
+
                   {/* Resultados de cálculo */}
-                  {state.pesoTotalMigracion > 0 && (() => {
+                  {state.pesoTotalMigracion > 0 && state.cantidadUsuariosMigracion > 0 && (() => {
                     // Convertir todo a MB para cálculos
-                    const pesoEnMB = state.unidadPesoMigracion === "TB" 
+                    const pesoTotalEnMB = state.unidadPesoMigracion === "TB" 
                       ? state.pesoTotalMigracion * 1024 * 1024 
                       : state.pesoTotalMigracion * 1024;
                     
@@ -972,8 +987,12 @@ export function GoogleMicrosoftPage() {
                     const velocidadMBPorHora = 750; // MB/hora
                     const velocidadGBPorHora = velocidadMBPorHora / 1024; // GB/hora
                     
-                    // Tiempo estimado
-                    const horasEstimadas = pesoEnMB / velocidadMBPorHora;
+                    // MIGRACIÓN EN PARALELO: Peso se reparte entre usuarios
+                    const pesoPromedioMB = pesoTotalEnMB / state.cantidadUsuariosMigracion;
+                    const pesoPromedioGB = pesoPromedioMB / 1024;
+                    
+                    // Tiempo estimado (basado en peso promedio por usuario)
+                    const horasEstimadas = pesoPromedioMB / velocidadMBPorHora;
                     const diasEstimados = horasEstimadas / 24;
                     
                     return (
@@ -987,11 +1006,18 @@ export function GoogleMicrosoftPage() {
                               {velocidadGBPorHora.toFixed(2)} GB/hora
                             </span>
                           </div>
+
+                          <div className="flex justify-between items-center p-2 bg-indigo-100 rounded border border-indigo-200">
+                            <span className="text-gray-700">Peso promedio por usuario:</span>
+                            <span className="font-semibold text-indigo-800">
+                              {pesoPromedioGB.toFixed(2)} GB
+                            </span>
+                          </div>
                           
                           <Divider className="my-3" />
                           
                           <div className="p-3 bg-indigo-600 text-white rounded-lg">
-                            <div className="text-xs opacity-90 mb-1">Tiempo estimado:</div>
+                            <div className="text-xs opacity-90 mb-1">Tiempo estimado (migración en paralelo):</div>
                             <div className="text-2xl font-bold">
                               {horasEstimadas.toFixed(1)} horas
                             </div>
@@ -1002,7 +1028,8 @@ export function GoogleMicrosoftPage() {
                         </div>
                         
                         <div className="text-xs text-indigo-700 bg-indigo-50 p-3 rounded mt-3">
-                          <strong>📌 Nota:</strong> Basado en velocidad de 750 MB/hora según documentación oficial de BitTitan.
+                          <strong>📌 Nota:</strong> BitTitan migra en paralelo. Con {state.cantidadUsuariosMigracion} usuarios,
+                          el peso se reparte ({pesoPromedioGB.toFixed(2)} GB/usuario). Velocidad: 750 MB/hora por usuario.
                           {state.incluirTiempoMigracion ? (
                             <span className="block mt-1 font-semibold text-indigo-800">
                               ✓ Este tiempo se sumará al total de horas operativas.
@@ -1021,9 +1048,9 @@ export function GoogleMicrosoftPage() {
                 {/* Info adicional */}
                 <div className="p-4 bg-indigo-50 border-l-4 border-indigo-400 rounded">
                   <p className="text-sm text-indigo-900">
-                    <span className="font-semibold">ℹ️ Información:</span> Esta calculadora utiliza la velocidad promedio
-                    de BitTitan de <strong>750 MB por hora</strong> (0.73 GB/hora). Los tiempos son estimados y
-                    pueden variar según las condiciones de red.
+                    <span className="font-semibold">ℹ️ Información:</span> Esta calculadora considera que BitTitan 
+                    migra en <strong>paralelo</strong>. El peso total se reparte entre los usuarios y se calcula 
+                    el tiempo basado en <strong>750 MB por hora</strong> por usuario. Los tiempos son estimados.
                   </p>
                 </div>
               </CardBody>

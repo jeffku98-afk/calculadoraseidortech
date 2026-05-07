@@ -327,17 +327,21 @@ export function calcularTiempoGoogleMicrosoft(
   }
 
   // TIEMPO DE MIGRACIÓN BITTITAN (si está habilitado para incluir)
-  if (state.configuracionTenant === "bittitan" && state.incluirTiempoMigracion && state.pesoTotalMigracion > 0) {
+  if (state.configuracionTenant === "bittitan" && state.incluirTiempoMigracion && state.pesoTotalMigracion > 0 && state.cantidadUsuariosMigracion > 0) {
     // Convertir peso a MB
-    const pesoEnMB = state.unidadPesoMigracion === "TB" 
+    const pesoTotalEnMB = state.unidadPesoMigracion === "TB" 
       ? state.pesoTotalMigracion * 1024 * 1024 
       : state.pesoTotalMigracion * 1024;
     
-    // Velocidad fija: 750 MB/hora
+    // MIGRACIÓN EN PARALELO: Peso se reparte entre usuarios
+    const pesoPromedioMB = pesoTotalEnMB / state.cantidadUsuariosMigracion;
+    const pesoPromedioGB = pesoPromedioMB / 1024;
+    
+    // Velocidad fija: 750 MB/hora por usuario
     const velocidadMBPorHora = 750;
     
-    // Calcular horas de migración
-    const horasMigracion = pesoEnMB / velocidadMBPorHora;
+    // Calcular horas de migración (basado en peso promedio)
+    const horasMigracion = pesoPromedioMB / velocidadMBPorHora;
     const minutosMigracion = Math.round(horasMigracion * 60);
     
     totalMinutos += minutosMigracion;
@@ -357,7 +361,7 @@ export function calcularTiempoGoogleMicrosoft(
     desglose.push({
       concepto: "Tiempo de migración BitTitan",
       tiempo: tiempoTexto,
-      detalle: `${state.pesoTotalMigracion} ${state.unidadPesoMigracion} a 750 MB/hora (${diasMigracion} días aprox.)`
+      detalle: `${state.pesoTotalMigracion} ${state.unidadPesoMigracion} / ${state.cantidadUsuariosMigracion} usuarios = ${pesoPromedioGB.toFixed(2)} GB/usuario (${diasMigracion} días aprox.)`
     });
   }
 
