@@ -972,28 +972,46 @@ export function GoogleMicrosoftPage() {
                     endContent={
                       <span className="text-gray-500 text-sm">usuarios</span>
                     }
-                    description="BitTitan migra en paralelo - el peso se reparte entre usuarios"
+                    description="Número de usuarios a migrar (solo informativo)"
                     className="max-w-md"
                   />
 
                   {/* Resultados de cálculo */}
                   {state.pesoTotalMigracion > 0 && state.cantidadUsuariosMigracion > 0 && (() => {
-                    // Convertir todo a MB para cálculos
-                    const pesoTotalEnMB = state.unidadPesoMigracion === "TB" 
-                      ? state.pesoTotalMigracion * 1024 * 1024 
-                      : state.pesoTotalMigracion * 1024;
+                    // Convertir todo a GB para cálculos
+                    const pesoTotalEnGB = state.unidadPesoMigracion === "TB" 
+                      ? state.pesoTotalMigracion * 1024 
+                      : state.pesoTotalMigracion;
                     
-                    // Velocidad fija BitTitan: 750 MB/hora
-                    const velocidadMBPorHora = 750; // MB/hora
-                    const velocidadGBPorHora = velocidadMBPorHora / 1024; // GB/hora
+                    // Velocidad BitTitan: 3 TB/mes
+                    const velocidadTBPorMes = 3; // TB/mes
+                    const velocidadGBPorMes = velocidadTBPorMes * 1024; // GB/mes
+                    const velocidadGBPorDia = velocidadGBPorMes / 30; // GB/día (asumiendo 30 días/mes)
                     
-                    // MIGRACIÓN EN PARALELO: Peso se reparte entre usuarios
-                    const pesoPromedioMB = pesoTotalEnMB / state.cantidadUsuariosMigracion;
-                    const pesoPromedioGB = pesoPromedioMB / 1024;
+                    // Cálculo directo: Peso total / Velocidad (sin dividir por usuarios)
+                    const mesesEstimados = pesoTotalEnGB / velocidadGBPorMes;
+                    const diasEstimados = mesesEstimados * 30;
+                    const semanasEstimadas = diasEstimados / 7;
+                    const horasEstimadas = diasEstimados * 24;
                     
-                    // Tiempo estimado (basado en peso promedio por usuario)
-                    const horasEstimadas = pesoPromedioMB / velocidadMBPorHora;
-                    const diasEstimados = horasEstimadas / 24;
+                    // Determinar el formato más apropiado para mostrar
+                    let tiempoFormateado = "";
+                    if (mesesEstimados >= 1) {
+                      // Mostrar en meses y días
+                      const meses = Math.floor(mesesEstimados);
+                      const diasRestantes = Math.round((mesesEstimados - meses) * 30);
+                      tiempoFormateado = meses > 0 
+                        ? `${meses} ${meses === 1 ? 'mes' : 'meses'}${diasRestantes > 0 ? ` y ${diasRestantes} ${diasRestantes === 1 ? 'día' : 'días'}` : ''}`
+                        : `${diasRestantes} ${diasRestantes === 1 ? 'día' : 'días'}`;
+                    } else if (diasEstimados >= 7) {
+                      // Mostrar en semanas y días
+                      const semanas = Math.floor(semanasEstimadas);
+                      const diasRestantes = Math.round(diasEstimados - (semanas * 7));
+                      tiempoFormateado = `${semanas} ${semanas === 1 ? 'semana' : 'semanas'}${diasRestantes > 0 ? ` y ${diasRestantes} ${diasRestantes === 1 ? 'día' : 'días'}` : ''}`;
+                    } else {
+                      // Mostrar en días
+                      tiempoFormateado = `${diasEstimados.toFixed(1)} ${diasEstimados < 2 ? 'día' : 'días'}`;
+                    }
                     
                     return (
                       <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-lg space-y-3">
@@ -1003,33 +1021,41 @@ export function GoogleMicrosoftPage() {
                           <div className="flex justify-between items-center p-2 bg-white rounded">
                             <span className="text-gray-600">Velocidad BitTitan:</span>
                             <span className="font-semibold text-indigo-700">
-                              {velocidadGBPorHora.toFixed(2)} GB/hora
+                              {velocidadTBPorMes} TB/mes
+                            </span>
+                          </div>
+
+                          <div className="flex justify-between items-center p-2 bg-white rounded">
+                            <span className="text-gray-600">Equivalente a:</span>
+                            <span className="font-semibold text-indigo-700">
+                              {velocidadGBPorDia.toFixed(2)} GB/día
                             </span>
                           </div>
 
                           <div className="flex justify-between items-center p-2 bg-indigo-100 rounded border border-indigo-200">
-                            <span className="text-gray-700">Peso promedio por usuario:</span>
+                            <span className="text-gray-700">Peso total a migrar:</span>
                             <span className="font-semibold text-indigo-800">
-                              {pesoPromedioGB.toFixed(2)} GB
+                              {pesoTotalEnGB.toFixed(2)} GB
                             </span>
                           </div>
                           
                           <Divider className="my-3" />
                           
                           <div className="p-3 bg-indigo-600 text-white rounded-lg">
-                            <div className="text-xs opacity-90 mb-1">Tiempo estimado (migración en paralelo):</div>
+                            <div className="text-xs opacity-90 mb-1">Tiempo estimado de migración:</div>
                             <div className="text-2xl font-bold">
-                              {horasEstimadas.toFixed(1)} horas
+                              {tiempoFormateado}
                             </div>
-                            <div className="text-sm opacity-90 mt-1">
-                              ({diasEstimados.toFixed(1)} días)
+                            <div className="text-xs opacity-75 mt-2 space-y-1">
+                              <div>≈ {diasEstimados.toFixed(1)} días</div>
+                              {diasEstimados >= 7 && <div>≈ {semanasEstimadas.toFixed(1)} semanas</div>}
+                              {mesesEstimados >= 0.5 && <div>≈ {mesesEstimados.toFixed(2)} meses</div>}
                             </div>
                           </div>
                         </div>
                         
                         <div className="text-xs text-indigo-700 bg-indigo-50 p-3 rounded mt-3">
-                          <strong>📌 Nota:</strong> BitTitan migra en paralelo. Con {state.cantidadUsuariosMigracion} usuarios,
-                          el peso se reparte ({pesoPromedioGB.toFixed(2)} GB/usuario). Velocidad: 750 MB/hora por usuario.
+                          <strong>📌 Nota:</strong> Cálculo basado en {pesoTotalEnGB.toFixed(2)} GB a velocidad de 3 TB/mes de BitTitan ({state.cantidadUsuariosMigracion} {state.cantidadUsuariosMigracion === 1 ? 'usuario' : 'usuarios'}).
                           {state.incluirTiempoMigracion ? (
                             <span className="block mt-1 font-semibold text-indigo-800">
                               ✓ Este tiempo se sumará al total de horas operativas.
@@ -1048,9 +1074,9 @@ export function GoogleMicrosoftPage() {
                 {/* Info adicional */}
                 <div className="p-4 bg-indigo-50 border-l-4 border-indigo-400 rounded">
                   <p className="text-sm text-indigo-900">
-                    <span className="font-semibold">ℹ️ Información:</span> Esta calculadora considera que BitTitan 
-                    migra en <strong>paralelo</strong>. El peso total se reparte entre los usuarios y se calcula 
-                    el tiempo basado en <strong>750 MB por hora</strong> por usuario. Los tiempos son estimados.
+                    <span className="font-semibold">ℹ️ Información:</span> Esta calculadora usa la velocidad 
+                    de BitTitan de <strong>3 TB por mes</strong>. El tiempo se calcula directamente sobre el peso 
+                    total a migrar. Los tiempos son estimados.
                   </p>
                 </div>
               </CardBody>

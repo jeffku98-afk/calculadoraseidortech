@@ -263,15 +263,16 @@ export async function generarPDF(datos: DatosPDF) {
         },
         bodyStyles: {
           textColor: colorTexto,
-          fontSize: 10,
+          fontSize: 9,
+          cellPadding: 3,
         },
         alternateRowStyles: {
           fillColor: [238, 242, 255] as [number, number, number], // Índigo muy claro
         },
         columnStyles: {
-          0: { cellWidth: 70 },
-          1: { cellWidth: 40 },
-          2: { cellWidth: "auto" },
+          0: { cellWidth: 60 },
+          1: { cellWidth: 35 },
+          2: { cellWidth: 85, overflow: 'linebreak' },
         },
         margin: { left: 15, right: 15 },
       });
