@@ -177,15 +177,116 @@ export async function generarPDF(datos: DatosPDF) {
   yPosition += cajaAltura + 15;
 
   // ==========================================
+  // DESGLOSE DE HORAS (solo si hay BitTitan)
+  // Diseño minimalista alineado a la izquierda
+  // ==========================================
+  if (datos.desglose.length > 0) {
+    // Separar horas de operación y tiempo de migración BitTitan
+    const horasOperacion = datos.desglose.filter(
+      item => !item.concepto.includes("Tiempo de migración BitTitan")
+    );
+    const tiempoBitTitan = datos.desglose.filter(
+      item => item.concepto.includes("Tiempo de migración BitTitan")
+    );
+
+    // Solo mostrar desglose si hay horas de BitTitan
+    if (tiempoBitTitan.length > 0) {
+      // Calcular totales
+      let minutosOperacion = 0;
+      horasOperacion.forEach(item => {
+        const horasMatch = item.tiempo.match(/(\d+)\s*(?:hora|horas)/);
+        const minutosMatch = item.tiempo.match(/(\d+)\s*min/);
+        if (horasMatch) minutosOperacion += parseInt(horasMatch[1]) * 60;
+        if (minutosMatch) minutosOperacion += parseInt(minutosMatch[1]);
+      });
+
+      let minutosBitTitan = 0;
+      tiempoBitTitan.forEach(item => {
+        const horasMatch = item.tiempo.match(/(\d+)\s*(?:hora|horas)/);
+        const minutosMatch = item.tiempo.match(/(\d+)\s*min/);
+        if (horasMatch) minutosBitTitan += parseInt(horasMatch[1]) * 60;
+        if (minutosMatch) minutosBitTitan += parseInt(minutosMatch[1]);
+      });
+
+      const horasOperacionTotal = Math.floor(minutosOperacion / 60);
+      const minutosOperacionResto = minutosOperacion % 60;
+      const horasBitTitanTotal = Math.floor(minutosBitTitan / 60);
+      const minutosBitTitanResto = minutosBitTitan % 60;
+
+      // Formatear textos
+      const textoOperacion = minutosOperacionResto > 0
+        ? `${horasOperacionTotal} ${horasOperacionTotal === 1 ? 'hora' : 'horas'} ${minutosOperacionResto} min`
+        : `${horasOperacionTotal} ${horasOperacionTotal === 1 ? 'hora' : 'horas'}`;
+      
+      const textoBitTitan = minutosBitTitanResto > 0
+        ? `${horasBitTitanTotal} ${horasBitTitanTotal === 1 ? 'hora' : 'horas'} ${minutosBitTitanResto} min`
+        : `${horasBitTitanTotal} ${horasBitTitanTotal === 1 ? 'hora' : 'horas'}`;
+
+      // Calcular anchos con fuente pequeña
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "bold");
+      
+      const anchoTexto1 = doc.getTextWidth("Horas de operación: " + textoOperacion);
+      const anchoTexto2 = doc.getTextWidth("Horas de migración BitTitan: " + textoBitTitan);
+      const anchoMaxTexto = Math.max(anchoTexto1, anchoTexto2);
+      
+      // Dimensiones compactas
+      const paddingH = 8;
+      const paddingV = 3;
+      const tableWidth = anchoMaxTexto + (paddingH * 2);
+      const rowHeight = 9;
+      const tableHeight = (rowHeight * 2) + (paddingV * 2) + 2;
+      
+      // Alineado a la izquierda
+      const tableX = 15;
+      const tableY = yPosition;
+      
+      // Fondo celeste muy sutil
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(tableX, tableY, tableWidth, tableHeight, 2, 2, 'F');
+      
+      // Borde muy delgado
+      doc.setDrawColor(...colorPrimario);
+      doc.setLineWidth(0.2);
+      doc.roundedRect(tableX, tableY, tableWidth, tableHeight, 2, 2, 'S');
+      
+      // Línea 1: Horas de operación
+      let currentY = tableY + paddingV + 6;
+      doc.setFontSize(9);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(...colorPrimario);
+      doc.text("Horas de operación: ", tableX + paddingH, currentY);
+      
+      const offsetOperacion = doc.getTextWidth("Horas de operación: ");
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(60, 60, 60);
+      doc.text(textoOperacion, tableX + paddingH + offsetOperacion, currentY);
+      
+      // Línea 2: Horas de migración
+      currentY += rowHeight;
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(...colorPrimario);
+      doc.text("Horas de migración BitTitan: ", tableX + paddingH, currentY);
+      
+      const offsetMigracion = doc.getTextWidth("Horas de migración BitTitan: ");
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(60, 60, 60);
+      doc.text(textoBitTitan, tableX + paddingH + offsetMigracion, currentY);
+
+      yPosition = tableY + tableHeight + 15;
+    }
+  }
+
+  // ==========================================
   // TABLA DE DESGLOSE - HORAS DE OPERACIÓN
   // ==========================================
   if (datos.desglose.length > 0) {
     // Separar horas de operación y tiempo de migración BitTitan
     const horasOperacion = datos.desglose.filter(
-      item => !item.concepto.includes("BitTitan")
+      item => !item.concepto.includes("Tiempo de migración BitTitan")
     );
     const tiempoBitTitan = datos.desglose.filter(
-      item => item.concepto.includes("BitTitan")
+      item => item.concepto.includes("Tiempo de migración BitTitan")
     );
 
     // Tabla de horas de operación (sin BitTitan)
