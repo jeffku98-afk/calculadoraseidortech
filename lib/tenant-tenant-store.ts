@@ -4,6 +4,9 @@ export interface TenantTenantState {
   // Panel
   panel: "crear" | "existente";
   
+  // Nombre del cliente
+  nombreCliente: string;
+  
   // Dominios
   cantidadDominios: number;
   
@@ -14,49 +17,63 @@ export interface TenantTenantState {
   sitiosSharepoint: boolean;
   cantidadSitios: number;
   configuracionPermisos: boolean;
-  // ELIMINADO: usuariosPorSitio (ahora es 5 min por sitio)
   
   // CONFIGURACIONES ADICIONALES
   // Seguridad
   listasBlancaNegra: boolean;
-  cantidadDominiosListas: number; // 1 min por dominio
+  cantidadDominiosListas: number;
   listasDistribucion: boolean;
-  cantidadListasDistribucion: number; // 15 min por lista
+  cantidadListasDistribucion: number;
+  bloqueoIPs: boolean;
+  cantidadIPs: number;
   
   // Reglas
   crearReglas: boolean;
   cantidadReglas: number;
-  mostrarAdvertenciaReglas: boolean; // Para el modal
+  mostrarAdvertenciaReglas: boolean;
   
   // Herramientas (ÚNICA DE ESTE MÓDULO)
   herramientaNativa: boolean;
   usarShareGate: boolean;
+  usarBitTitan: boolean; // NUEVO: Calculadora BitTitan
   
   // ALMACENAMIENTO - SIN LICENCIAS
-  // Opciones de Retención y Archivado
   crearPoliticasRetencion: boolean;
   politicasRetencion: boolean;
   usuariosPoliticasRetencion: number;
   habilitarArchivado: boolean;
   usuariosArchivado: number;
-  
-  // Auto-expanding archivado
   autoExpandingArchivado: boolean;
   usuariosAutoExpanding: number;
-  
-  // Forzar archivado
   forzarArchivado: boolean;
   usuariosForzarArchivado: number;
   
-  // Informe de Migración - NUEVO
+  // Informe de Migración
   informeMigracion: boolean;
   frecuenciaInforme: "semanal" | "mensual";
 
-  nombreCliente: string;
+  // NUEVO: Monitoreo de usuarios
+  monitoreoUsuarios: number;
+
+  // NUEVO: Incremental de buzones por semana
+  incrementalBuzonesSemana: number;
+
+  // NUEVO: Calculadora BitTitan
+  pesoTotalMigracion: number;
+  unidadPesoMigracion: "GB" | "TB";
+  cantidadUsuariosMigracion: number;
+  incluirTiempoMigracion: boolean;
+
+  // NUEVO: CONSIDERACIONES ADICIONALES - NO SUMAN HORAS
+  // CORREO ELECTRÓNICO
+  tamañoBuzones: number;
+  buzonesExceden50GB: number;
+  listasGruposMigrar: number;
 }
 
 interface TenantTenantActions {
   setPanel: (panel: "crear" | "existente") => void;
+  setNombreCliente: (nombre: string) => void;
   setCantidadDominios: (cantidad: number) => void;
   setCantidadUsuarios: (cantidad: number) => void;
   setSitiosSharepoint: (activo: boolean) => void;
@@ -66,11 +83,14 @@ interface TenantTenantActions {
   setCantidadDominiosListas: (cantidad: number) => void;
   setListasDistribucion: (activo: boolean) => void;
   setCantidadListasDistribucion: (cantidad: number) => void;
+  setBloqueoIPs: (activo: boolean) => void;
+  setCantidadIPs: (cantidad: number) => void;
   setCrearReglas: (crear: boolean) => void;
   setCantidadReglas: (cantidad: number) => void;
   setMostrarAdvertenciaReglas: (mostrar: boolean) => void;
   setHerramientaNativa: (activo: boolean) => void;
   setUsarShareGate: (activo: boolean) => void;
+  setUsarBitTitan: (activo: boolean) => void; // NUEVO
   setCrearPoliticasRetencion: (crear: boolean) => void;
   setPoliticasRetencion: (activo: boolean) => void;
   setUsuariosPoliticasRetencion: (cantidad: number) => void;
@@ -82,12 +102,23 @@ interface TenantTenantActions {
   setUsuariosForzarArchivado: (cantidad: number) => void;
   setInformeMigracion: (activo: boolean) => void;
   setFrecuenciaInforme: (frecuencia: "semanal" | "mensual") => void;
+  // NUEVO
+  setMonitoreoUsuarios: (cantidad: number) => void;
+  setIncrementalBuzonesSemana: (gb: number) => void;
+  setPesoTotalMigracion: (peso: number) => void;
+  setUnidadPesoMigracion: (unidad: "GB" | "TB") => void;
+  setCantidadUsuariosMigracion: (cantidad: number) => void;
+  setIncluirTiempoMigracion: (incluir: boolean) => void;
+  // Consideraciones Adicionales
+  setTamañoBuzones: (value: number) => void;
+  setBuzonesExceden50GB: (value: number) => void;
+  setListasGruposMigrar: (value: number) => void;
   reset: () => void;
-  setNombreCliente: (nombre: string) => void;
 }
 
 const initialState: TenantTenantState = {
   panel: "crear",
+  nombreCliente: "",
   cantidadDominios: 0,
   cantidadUsuarios: 0,
   sitiosSharepoint: false,
@@ -97,11 +128,14 @@ const initialState: TenantTenantState = {
   cantidadDominiosListas: 0,
   listasDistribucion: false,
   cantidadListasDistribucion: 0,
+  bloqueoIPs: false,
+  cantidadIPs: 0,
   crearReglas: false,
   cantidadReglas: 0,
   mostrarAdvertenciaReglas: false,
   herramientaNativa: false,
   usarShareGate: false,
+  usarBitTitan: false, // NUEVO
   crearPoliticasRetencion: false,
   politicasRetencion: false,
   usuariosPoliticasRetencion: 0,
@@ -113,7 +147,17 @@ const initialState: TenantTenantState = {
   usuariosForzarArchivado: 0,
   informeMigracion: false,
   frecuenciaInforme: "semanal",
-  nombreCliente: "",
+  // NUEVO
+  monitoreoUsuarios: 0,
+  incrementalBuzonesSemana: 0,
+  pesoTotalMigracion: 0,
+  unidadPesoMigracion: "GB",
+  cantidadUsuariosMigracion: 0,
+  incluirTiempoMigracion: false,
+  // Consideraciones Adicionales
+  tamañoBuzones: 0,
+  buzonesExceden50GB: 0,
+  listasGruposMigrar: 0,
 };
 
 export const useTenantTenantStore = create<
@@ -122,6 +166,7 @@ export const useTenantTenantStore = create<
   ...initialState,
 
   setPanel: (panel) => set({ panel }),
+  setNombreCliente: (nombreCliente) => set({ nombreCliente }),
   setCantidadDominios: (cantidadDominios) => set({ cantidadDominios }),
   setCantidadUsuarios: (cantidadUsuarios) => set({ cantidadUsuarios }),
   setSitiosSharepoint: (sitiosSharepoint) => set({ sitiosSharepoint }),
@@ -131,11 +176,14 @@ export const useTenantTenantStore = create<
   setCantidadDominiosListas: (cantidadDominiosListas) => set({ cantidadDominiosListas }),
   setListasDistribucion: (listasDistribucion) => set({ listasDistribucion }),
   setCantidadListasDistribucion: (cantidadListasDistribucion) => set({ cantidadListasDistribucion }),
+  setBloqueoIPs: (bloqueoIPs) => set({ bloqueoIPs }),
+  setCantidadIPs: (cantidadIPs) => set({ cantidadIPs }),
   setCrearReglas: (crearReglas) => set({ crearReglas }),
   setCantidadReglas: (cantidadReglas) => set({ cantidadReglas }),
   setMostrarAdvertenciaReglas: (mostrarAdvertenciaReglas) => set({ mostrarAdvertenciaReglas }),
   setHerramientaNativa: (herramientaNativa) => set({ herramientaNativa }),
   setUsarShareGate: (usarShareGate) => set({ usarShareGate }),
+  setUsarBitTitan: (usarBitTitan) => set({ usarBitTitan }), // NUEVO
   setCrearPoliticasRetencion: (crearPoliticasRetencion) =>
     set({ crearPoliticasRetencion }),
   setPoliticasRetencion: (politicasRetencion) => set({ politicasRetencion }),
@@ -151,6 +199,16 @@ export const useTenantTenantStore = create<
   setUsuariosForzarArchivado: (usuariosForzarArchivado) => set({ usuariosForzarArchivado }),
   setInformeMigracion: (informeMigracion) => set({ informeMigracion }),
   setFrecuenciaInforme: (frecuenciaInforme) => set({ frecuenciaInforme }),
+  // NUEVO
+  setMonitoreoUsuarios: (monitoreoUsuarios) => set({ monitoreoUsuarios }),
+  setIncrementalBuzonesSemana: (incrementalBuzonesSemana) => set({ incrementalBuzonesSemana }),
+  setPesoTotalMigracion: (pesoTotalMigracion) => set({ pesoTotalMigracion }),
+  setUnidadPesoMigracion: (unidadPesoMigracion) => set({ unidadPesoMigracion }),
+  setCantidadUsuariosMigracion: (cantidadUsuariosMigracion) => set({ cantidadUsuariosMigracion }),
+  setIncluirTiempoMigracion: (incluirTiempoMigracion) => set({ incluirTiempoMigracion }),
+  // Consideraciones Adicionales
+  setTamañoBuzones: (tamañoBuzones) => set({ tamañoBuzones }),
+  setBuzonesExceden50GB: (buzonesExceden50GB) => set({ buzonesExceden50GB }),
+  setListasGruposMigrar: (listasGruposMigrar) => set({ listasGruposMigrar }),
   reset: () => set(initialState),
-  setNombreCliente: (nombreCliente) => set({ nombreCliente }),
 }));

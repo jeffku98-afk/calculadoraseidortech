@@ -30,14 +30,15 @@ export function TenantTenantPage() {
     await generarPDF({
       titulo: "Tenant a Tenant",
       fecha: obtenerFechaActual(),
+      nombreCliente: state.nombreCliente || undefined,
       horas: resultado.horas,
       minutos: resultado.minutos,
       desglose: resultado.desglose,
+      consideraciones: resultado.consideraciones,
       disclaimer:
         "El proceso es gradual y puede tardar días o semanas en buzones muy grandes.",
       userName: session?.user?.name ?? undefined,
       userEmail: session?.user?.email ?? undefined,
-      nombreCliente: state.nombreCliente || undefined,
     });
   };
 
@@ -61,15 +62,21 @@ export function TenantTenantPage() {
     state.setMostrarAdvertenciaReglas(false);
   };
 
+  // Handler para ShareGate - resetea opciones de sitios al desmarcar
   const handleToggleShareGate = (value: boolean) => {
-  state.setUsarShareGate(value);
-  
-  if (!value) {
-    state.setSitiosSharepoint(false);
-    state.setConfiguracionPermisos(false);
-    state.setCantidadSitios(0);
-  }
-};
+    console.log('ShareGate toggle:', value); // Debug
+    
+    // Si se desmarca ShareGate, resetear ANTES de cambiar el estado
+    if (!value) {
+      console.log('Reseteando opciones de sitios...'); // Debug
+      state.setSitiosSharepoint(false);
+      state.setConfiguracionPermisos(false);
+      state.setCantidadSitios(0);
+    }
+    
+    // Cambiar el estado de ShareGate DESPUÉS del reseteo
+    state.setUsarShareGate(value);
+  };
 
   return (
     <div className="flex-1 p-8 bg-gray-50">
@@ -95,32 +102,26 @@ export function TenantTenantPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Formulario */}
         <div className="lg:col-span-2 space-y-6">
-
-          {/* NOMBRE DEL CLIENTE */}
+        {/* NOMBRE DEL CLIENTE */}
           <Card>
-            <CardHeader className="pb-3">
+            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
               <div>
-                <h3 className="text-lg font-semibold text-seidor-400">
-                  Nombre del Cliente
-                </h3>
-                <p className="text-sm text-seidor-500">
-                  Ingresa el nombre del cliente para este cálculo
-                </p>
+                <h2 className="text-xl font-bold">Nombre del Cliente</h2>
+                <p className="text-sm opacity-90">Aparecerá en el PDF generado</p>
               </div>
             </CardHeader>
             <CardBody>
               <Input
                 type="text"
                 label="Nombre del cliente"
-                placeholder="Ej: Empresa ABC S.A."
+                placeholder="Ej: Empresa S.A."
                 value={state.nombreCliente}
-                onValueChange={(value) => state.setNombreCliente(value)}
+                onValueChange={state.setNombreCliente}
                 className="max-w-md"
-                description="Este nombre aparecerá en el PDF generado"
               />
             </CardBody>
           </Card>
-          
+
           {/* 1. PANEL */}
           <Card>
             <CardHeader className="pb-3">
@@ -213,7 +214,7 @@ export function TenantTenantPage() {
           </Card>
 
           {/* 4. HERRAMIENTAS - REORGANIZADO: ShareGate PRIMERO */}
-           <Card>
+          <Card>
             <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
               <div>
                 <h2 className="text-xl font-bold">Herramientas</h2>
@@ -248,6 +249,20 @@ export function TenantTenantPage() {
                   </div>
                 </Switch>
               </div>
+
+              <div className="space-y-2">
+                <Switch
+                  isSelected={state.usarBitTitan}
+                  onValueChange={state.setUsarBitTitan}
+                >
+                  <div>
+                    <p className="font-semibold text-indigo-700">BitTitan</p>
+                    <p className="text-sm text-gray-500">
+                      Habilita la calculadora de tiempo de migración BitTitan
+                    </p>
+                  </div>
+                </Switch>
+              </div>
             </CardBody>
           </Card>
 
@@ -273,6 +288,7 @@ export function TenantTenantPage() {
                 </div>
               )}
 
+              {/* Opción 1: Migrar sitios de SharePoint */}
               <div className="space-y-2">
                 <Switch
                   isSelected={state.sitiosSharepoint}
@@ -283,7 +299,7 @@ export function TenantTenantPage() {
                     <p className="font-semibold text-seidor-400">
                       Migrar sitios de SharePoint
                     </p>
-                    <p className="text-sm text-seidor-500">3 horas</p>
+                    <p className="text-sm text-seidor-500">3 horas fijas</p>
                   </div>
                 </Switch>
               </div>
@@ -416,6 +432,43 @@ export function TenantTenantPage() {
                         description={
                           state.cantidadListasDistribucion > 0
                             ? `${state.cantidadListasDistribucion * 15} minutos total`
+                            : ""
+                        }
+                      />
+                    )}
+                  </div>
+
+                  {/* Bloqueo de IPs */}
+                  <div className="space-y-2">
+                    <Switch
+                      size="sm"
+                      isSelected={state.bloqueoIPs}
+                      onValueChange={state.setBloqueoIPs}
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-seidor-400">
+                          Bloqueo de IPs
+                        </p>
+                        <p className="text-xs text-seidor-500">
+                          5 minutos por IP
+                        </p>
+                      </div>
+                    </Switch>
+                    {state.bloqueoIPs && (
+                      <Input
+                        size="sm"
+                        type="number"
+                        label="Cantidad de IPs"
+                        placeholder="Ej: 8"
+                        value={state.cantidadIPs.toString()}
+                        onValueChange={(value) =>
+                          state.setCantidadIPs(parseInt(value) || 0)
+                        }
+                        min={0}
+                        className="ml-6 max-w-xs"
+                        description={
+                          state.cantidadIPs > 0
+                            ? `${state.cantidadIPs * 5} minutos total`
                             : ""
                         }
                       />
@@ -651,7 +704,7 @@ export function TenantTenantPage() {
           <Card>
             <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
               <div>
-                <h2 className="text-xl font-bold">Informe de Migración</h2>
+                <h2 className="text-xl font-bold">Informes de Migración</h2>
                 <p className="text-sm opacity-90">
                   1 hora por informe
                 </p>
@@ -689,6 +742,286 @@ export function TenantTenantPage() {
               )}
             </CardBody>
           </Card>
+
+          {/* MONITOREO DE USUARIOS */}
+          <Card>
+            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
+              <div>
+                <h2 className="text-xl font-bold">Monitoreo de Usuarios</h2>
+                <p className="text-sm opacity-90">
+                  10 minutos por cada usuario monitoreado
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody>
+              <Input
+                type="number"
+                label="Cantidad de usuarios a monitorear"
+                placeholder="Ej: 50"
+                value={state.monitoreoUsuarios.toString()}
+                onValueChange={(value) =>
+                  state.setMonitoreoUsuarios(parseInt(value) || 0)
+                }
+                min={0}
+                className="max-w-xs"
+                description={
+                  state.monitoreoUsuarios > 0
+                    ? `${state.monitoreoUsuarios * 10} minutos total`
+                    : ""
+                }
+              />
+            </CardBody>
+          </Card>
+
+          {/* CONSIDERACIONES ADICIONALES */}
+          <Card>
+            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
+              <div>
+                <h2 className="text-xl font-bold">Consideraciones Adicionales</h2>
+                <p className="text-sm opacity-90">
+                  Información complementaria (no suma horas)
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody className="p-6 space-y-6">
+              {/* CORREO ELECTRÓNICO */}
+              <div className="space-y-4">
+                <h4 className="font-bold text-seidor-400 flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                  CORREO ELECTRÓNICO
+                </h4>
+                <div className="space-y-4">
+                  <Input
+                    type="number"
+                    label="Tamaño total en GB de todos los buzones a migrar"
+                    value={state.tamañoBuzones.toString()}
+                    onValueChange={(value) =>
+                      state.setTamañoBuzones(parseInt(value) || 0)
+                    }
+                    min="0"
+                    endContent={<span className="text-gray-500 text-sm">GB</span>}
+                    className="max-w-md"
+                  />
+                  <Input
+                    type="number"
+                    label="Buzones que exceden 50GB"
+                    value={state.buzonesExceden50GB.toString()}
+                    onValueChange={(value) =>
+                      state.setBuzonesExceden50GB(parseInt(value) || 0)
+                    }
+                    min="0"
+                    endContent={<span className="text-gray-500 text-sm">cuentas</span>}
+                    className="max-w-md"
+                  />
+                  <Input
+                    type="number"
+                    label="Cantidad de listas y grupos a migrar"
+                    value={state.listasGruposMigrar.toString()}
+                    onValueChange={(value) =>
+                      state.setListasGruposMigrar(parseInt(value) || 0)
+                    }
+                    min="0"
+                    endContent={<span className="text-gray-500 text-sm">listas/grupos</span>}
+                    className="max-w-md"
+                  />
+                </div>
+              </div>
+
+              {/* Nota informativa */}
+              <div className="p-4 bg-gray-50 border-l-4 border-blue-500 rounded">
+                <p className="text-sm text-gray-700">
+                  <span className="font-semibold text-blue-700">ℹ️ Nota:</span> Estas consideraciones son solo informativas y{" "}
+                  <span className="font-semibold">no suman tiempo</span> al cálculo total. Aparecerán en el PDF generado como referencia.
+                </p>
+              </div>
+            </CardBody>
+          </Card>
+
+          {/* INCREMENTAL DE BUZONES POR SEMANA */}
+          <Card>
+            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
+              <div>
+                <h2 className="text-xl font-bold">Incremental de buzones por semana</h2>
+                <p className="text-sm opacity-90">
+                  Información complementaria (no suma horas)
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody className="p-6">
+              <Input
+                type="number"
+                label="Incremental semanal en GB"
+                value={state.incrementalBuzonesSemana.toString()}
+                onValueChange={(value) =>
+                  state.setIncrementalBuzonesSemana(parseInt(value) || 0)
+                }
+                min="0"
+                endContent={<span className="text-gray-500 text-sm">GB/semana</span>}
+                className="max-w-md"
+                description="Este dato es solo informativo y no afecta el cálculo de horas"
+              />
+            </CardBody>
+          </Card>
+
+          {/* CALCULADORA BITTITAN - Solo visible cuando BitTitan está seleccionado */}
+          {state.usarBitTitan && (
+            <Card className="border-2 border-indigo-100">
+              <CardHeader className="bg-gradient-to-r from-indigo-400 to-indigo-300 text-white">
+                <div>
+                  <h2 className="text-xl font-bold flex items-center gap-2">
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    Calculadora BitTitan
+                  </h2>
+                  <p className="text-sm opacity-90">Estimación de tiempo de migración</p>
+                </div>
+              </CardHeader>
+              <CardBody className="p-6 space-y-6">
+                {/* Switch para incluir en tiempo total */}
+                <div className="pb-4 border-b border-gray-200">
+                  <Switch
+                    isSelected={state.incluirTiempoMigracion}
+                    onValueChange={state.setIncluirTiempoMigracion}
+                  >
+                    <div>
+                      <p className="font-semibold text-indigo-700">
+                        Incluir tiempo de migración en el total
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Si se activa, este tiempo se sumará al cálculo total y aparecerá en el PDF
+                      </p>
+                    </div>
+                  </Switch>
+                </div>
+
+                {/* Inputs */}
+                <div className="space-y-4">
+                  <div className="flex gap-2">
+                    <Input
+                      type="number"
+                      label="Peso total a migrar"
+                      value={state.pesoTotalMigracion.toString()}
+                      onValueChange={(value) =>
+                        state.setPesoTotalMigracion(parseFloat(value) || 0)
+                      }
+                      min="0"
+                      step="0.1"
+                      className="flex-1"
+                    />
+                    <div className="w-24">
+                      <select
+                        value={state.unidadPesoMigracion}
+                        onChange={(e) =>
+                          state.setUnidadPesoMigracion(e.target.value as "GB" | "TB")
+                        }
+                        className="w-full h-[56px] px-3 rounded-lg border-2 border-gray-300 focus:border-indigo-500 focus:outline-none bg-white text-sm"
+                      >
+                        <option value="GB">GB</option>
+                        <option value="TB">TB</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <Input
+                    type="number"
+                    label="Cantidad de usuarios"
+                    value={state.cantidadUsuariosMigracion.toString()}
+                    onValueChange={(value) =>
+                      state.setCantidadUsuariosMigracion(parseInt(value) || 0)
+                    }
+                    min="0"
+                    endContent={<span className="text-gray-500 text-sm">usuarios</span>}
+                    description="Número de usuarios a migrar (solo informativo)"
+                    className="max-w-md"
+                  />
+
+                  {/* Resultados */}
+                  {state.pesoTotalMigracion > 0 && state.cantidadUsuariosMigracion > 0 && (() => {
+                    const pesoTotalEnGB = state.unidadPesoMigracion === "TB"
+                      ? state.pesoTotalMigracion * 1024
+                      : state.pesoTotalMigracion;
+                    const velocidadTBPorMes = 3;
+                    const velocidadGBPorMes = velocidadTBPorMes * 1024;
+                    const velocidadGBPorDia = velocidadGBPorMes / 30;
+                    const mesesEstimados = pesoTotalEnGB / velocidadGBPorMes;
+                    const diasEstimados = mesesEstimados * 30;
+                    const semanasEstimadas = diasEstimados / 7;
+
+                    let tiempoFormateado = "";
+                    if (mesesEstimados >= 1) {
+                      const meses = Math.floor(mesesEstimados);
+                      const diasRestantes = Math.round((mesesEstimados - meses) * 30);
+                      tiempoFormateado = meses > 0
+                        ? `${meses} ${meses === 1 ? "mes" : "meses"}${diasRestantes > 0 ? ` y ${diasRestantes} ${diasRestantes === 1 ? "día" : "días"}` : ""}`
+                        : `${diasRestantes} ${diasRestantes === 1 ? "día" : "días"}`;
+                    } else if (diasEstimados >= 7) {
+                      const semanas = Math.floor(semanasEstimadas);
+                      const diasRestantes = Math.round(diasEstimados - semanas * 7);
+                      tiempoFormateado = `${semanas} ${semanas === 1 ? "semana" : "semanas"}${diasRestantes > 0 ? ` y ${diasRestantes} ${diasRestantes === 1 ? "día" : "días"}` : ""}`;
+                    } else {
+                      tiempoFormateado = `${diasEstimados.toFixed(1)} ${diasEstimados < 2 ? "día" : "días"}`;
+                    }
+
+                    return (
+                      <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-lg space-y-3">
+                        <h4 className="font-bold text-indigo-800 mb-3">Resultados del cálculo:</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between items-center p-2 bg-white rounded">
+                            <span className="text-gray-600">Velocidad BitTitan:</span>
+                            <span className="font-semibold text-indigo-700">{velocidadTBPorMes} TB/mes</span>
+                          </div>
+                          <div className="flex justify-between items-center p-2 bg-white rounded">
+                            <span className="text-gray-600">Equivalente a:</span>
+                            <span className="font-semibold text-indigo-700">{velocidadGBPorDia.toFixed(2)} GB/día</span>
+                          </div>
+                          <div className="flex justify-between items-center p-2 bg-indigo-100 rounded border border-indigo-200">
+                            <span className="text-gray-700">Peso total a migrar:</span>
+                            <span className="font-semibold text-indigo-800">{pesoTotalEnGB.toFixed(2)} GB</span>
+                          </div>
+                          <Divider className="my-3" />
+                          <div className="p-3 bg-indigo-600 text-white rounded-lg">
+                            <div className="text-xs opacity-90 mb-1">Tiempo estimado de migración:</div>
+                            <div className="text-2xl font-bold">{tiempoFormateado}</div>
+                            <div className="text-xs opacity-75 mt-2 space-y-1">
+                              <div>≈ {diasEstimados.toFixed(1)} días</div>
+                              {diasEstimados >= 7 && <div>≈ {semanasEstimadas.toFixed(1)} semanas</div>}
+                              {mesesEstimados >= 0.5 && <div>≈ {mesesEstimados.toFixed(2)} meses</div>}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-xs text-indigo-700 bg-indigo-50 p-3 rounded mt-3">
+                          <strong>📌 Nota:</strong> Cálculo basado en {pesoTotalEnGB.toFixed(2)} GB a velocidad de 3 TB/mes de BitTitan ({state.cantidadUsuariosMigracion} {state.cantidadUsuariosMigracion === 1 ? "usuario" : "usuarios"}).
+                          {state.incluirTiempoMigracion ? (
+                            <span className="block mt-1 font-semibold text-indigo-800">
+                              ✓ Este tiempo se sumará al total de horas operativas.
+                            </span>
+                          ) : (
+                            <span className="block mt-1">
+                              Este tiempo es solo referencial y no se suma al total.
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </div>
+
+                {/* Info adicional */}
+                <div className="p-4 bg-indigo-50 border-l-4 border-indigo-400 rounded">
+                  <p className="text-sm text-indigo-900">
+                    <span className="font-semibold">ℹ️ Información:</span> Esta calculadora usa la velocidad
+                    de BitTitan de <strong>3 TB por mes</strong>. El tiempo se calcula directamente sobre el peso
+                    total a migrar. Los tiempos son estimados.
+                  </p>
+                </div>
+              </CardBody>
+            </Card>
+          )}
 
           {/* Disclaimer */}
           <Card className="bg-blue-50 border-l-4 border-blue-500">
