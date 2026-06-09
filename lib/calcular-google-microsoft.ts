@@ -81,11 +81,12 @@ export function calcularTiempoGoogleMicrosoft(
       detalle: "Configurar Google: 3 horas - Configurar Microsoft: 10 horas",
     });
   } else {
-    // Nativa - Por definir (0 horas por ahora)
+    // Nativa - 15 horas
+    totalMinutos += 900;
     desglose.push({
       concepto: "Configuración de Tenant (Nativa)",
-      tiempo: "Por definir",
-      detalle: "Tiempo a determinar según configuración específica",
+      tiempo: "15 horas",
+      detalle: "Sujeto a limitaciones de la herramienta nativa",
     });
   }
 
