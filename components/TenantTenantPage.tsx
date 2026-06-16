@@ -62,21 +62,8 @@ export function TenantTenantPage() {
     state.setMostrarAdvertenciaReglas(false);
   };
 
-  // Handler para ShareGate - resetea opciones de sitios al desmarcar
-  const handleToggleShareGate = (value: boolean) => {
-    console.log('ShareGate toggle:', value); // Debug
-    
-    // Si se desmarca ShareGate, resetear ANTES de cambiar el estado
-    if (!value) {
-      console.log('Reseteando opciones de sitios...'); // Debug
-      state.setSitiosSharepoint(false);
-      state.setConfiguracionPermisos(false);
-      state.setCantidadSitios(0);
-    }
-    
-    // Cambiar el estado de ShareGate DESPUÉS del reseteo
-    state.setUsarShareGate(value);
-  };
+  // Nota: el reseteo de opciones de sitios al cambiar a "nativa" 
+  // ahora se maneja directamente en setHerramientaMigracion (store)
 
   return (
     <div className="flex-1 p-8 bg-gray-50">
@@ -217,40 +204,53 @@ export function TenantTenantPage() {
           <Card>
             <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
               <div>
-                <h2 className="text-xl font-bold">Herramientas</h2>
+                <h2 className="text-xl font-bold">
+                  Herramientas
+                </h2>
                 <p className="text-sm opacity-90">
                   Selecciona las herramientas a utilizar
                 </p>
               </div>
             </CardHeader>
             <CardBody className="space-y-4">
-              <div className="space-y-2">
-                <Switch
-                  isSelected={state.usarShareGate}
-                  onValueChange={handleToggleShareGate}
-                >
+              <RadioGroup
+                value={state.herramientaMigracion}
+                onValueChange={(value) =>
+                  state.setHerramientaMigracion(value as "sharegate" | "nativa")
+                }
+              >
+                <Radio value="sharegate">
                   <div>
                     <p className="font-semibold text-seidor-400">ShareGate</p>
-                    <p className="text-sm text-seidor-500">Habilita migración de sitios de SharePoint</p>
+                    <p className="text-sm text-seidor-500">
+                      Habilita migración de sitios de SharePoint
+                    </p>
                   </div>
-                </Switch>
-              </div>
-
-              <div className="space-y-2">
-                <Switch
-                  isSelected={state.herramientaNativa}
-                  onValueChange={state.setHerramientaNativa}
-                >
+                </Radio>
+                <Radio value="nativa">
                   <div>
                     <p className="font-semibold text-seidor-400">
                       Herramienta nativa de Microsoft
                     </p>
-                    <p className="text-sm text-seidor-500">3 horas</p>
+                    <p className="text-sm text-seidor-500">15 horas</p>
                   </div>
-                </Switch>
-              </div>
+                </Radio>
+              </RadioGroup>
 
-              <div className="space-y-2">
+              {/* Nota de advertencia para opción Nativa */}
+              {state.herramientaMigracion === "nativa" && (
+                <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <svg className="w-4 h-4 text-red-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <p className="text-sm text-red-600 font-medium">
+                    Sujeto a limitaciones de la herramienta nativa.
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-2 pt-2 border-t border-seidor-100">
                 <Switch
                   isSelected={state.usarBitTitan}
                   onValueChange={state.setUsarBitTitan}
@@ -704,7 +704,9 @@ export function TenantTenantPage() {
           <Card>
             <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
               <div>
-                <h2 className="text-xl font-bold">Informes de Migración</h2>
+                <h2 className="text-xl font-bold">
+                  Informe de Migración
+                </h2>
                 <p className="text-sm opacity-90">
                   1 hora por informe
                 </p>

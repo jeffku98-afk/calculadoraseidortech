@@ -65,8 +65,12 @@ export function calcularTiempoTenantTenant(
 
   // 4. HERRAMIENTAS - Herramienta Nativa
   if (state.herramientaNativa) {
-    totalMinutos += 180;
-    desglose.push({ concepto: "Herramienta nativa de Microsoft", tiempo: "3 horas" });
+    totalMinutos += 900; // 15 horas
+    desglose.push({
+      concepto: "Herramienta nativa de Microsoft",
+      tiempo: "15 horas",
+      detalle: "Sujeto a limitaciones de la herramienta nativa",
+    });
   }
 
   // 5. SITIOS DE SHAREPOINT

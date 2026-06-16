@@ -33,9 +33,11 @@ export interface TenantTenantState {
   mostrarAdvertenciaReglas: boolean;
   
   // Herramientas (ÚNICA DE ESTE MÓDULO)
-  herramientaNativa: boolean;
-  usarShareGate: boolean;
-  usarBitTitan: boolean; // NUEVO: Calculadora BitTitan
+  // ShareGate y Nativa son mutuamente excluyentes (selección única)
+  herramientaMigracion: "sharegate" | "nativa";
+  herramientaNativa: boolean; // Derivado de herramientaMigracion === "nativa"
+  usarShareGate: boolean; // Derivado de herramientaMigracion === "sharegate"
+  usarBitTitan: boolean; // Independiente: Calculadora BitTitan
   
   // ALMACENAMIENTO - SIN LICENCIAS
   crearPoliticasRetencion: boolean;
@@ -90,6 +92,7 @@ interface TenantTenantActions {
   setMostrarAdvertenciaReglas: (mostrar: boolean) => void;
   setHerramientaNativa: (activo: boolean) => void;
   setUsarShareGate: (activo: boolean) => void;
+  setHerramientaMigracion: (herramienta: "sharegate" | "nativa") => void;
   setUsarBitTitan: (activo: boolean) => void; // NUEVO
   setCrearPoliticasRetencion: (crear: boolean) => void;
   setPoliticasRetencion: (activo: boolean) => void;
@@ -133,8 +136,9 @@ const initialState: TenantTenantState = {
   crearReglas: false,
   cantidadReglas: 0,
   mostrarAdvertenciaReglas: false,
+  herramientaMigracion: "sharegate",
   herramientaNativa: false,
-  usarShareGate: false,
+  usarShareGate: true,
   usarBitTitan: false, // NUEVO
   crearPoliticasRetencion: false,
   politicasRetencion: false,
@@ -183,6 +187,16 @@ export const useTenantTenantStore = create<
   setMostrarAdvertenciaReglas: (mostrarAdvertenciaReglas) => set({ mostrarAdvertenciaReglas }),
   setHerramientaNativa: (herramientaNativa) => set({ herramientaNativa }),
   setUsarShareGate: (usarShareGate) => set({ usarShareGate }),
+  setHerramientaMigracion: (herramientaMigracion) =>
+    set({
+      herramientaMigracion,
+      usarShareGate: herramientaMigracion === "sharegate",
+      herramientaNativa: herramientaMigracion === "nativa",
+      // Si cambia a Nativa, resetear opciones de sitios (dependían de ShareGate)
+      ...(herramientaMigracion === "nativa"
+        ? { sitiosSharepoint: false, configuracionPermisos: false, cantidadSitios: 0 }
+        : {}),
+    }),
   setUsarBitTitan: (usarBitTitan) => set({ usarBitTitan }), // NUEVO
   setCrearPoliticasRetencion: (crearPoliticasRetencion) =>
     set({ crearPoliticasRetencion }),
