@@ -60,6 +60,10 @@ export interface GoogleMicrosoftState {
   informeMigracion: boolean;
   frecuenciaInforme: "semanal" | "mensual";
 
+  // UNIDADES COMPARTIDAS - MIGRACIÓN
+  unidadesCompartidasMigracion: boolean; // Activar/desactivar la sección
+  sitiosUnidadesCompartidas: number;     // Monitoreo: 15 min por sitio
+
   // CONSIDERACIONES ADICIONALES - NO SUMAN HORAS
   // DRIVE
   tamañoDrives: number;
@@ -105,6 +109,8 @@ interface GoogleMicrosoftActions {
   setMonitoreoUsuarios: (cantidad: number) => void;
   setInformeMigracion: (activo: boolean) => void;
   setFrecuenciaInforme: (frecuencia: "semanal" | "mensual") => void;
+  setUnidadesCompartidasMigracion: (activo: boolean) => void;
+  setSitiosUnidadesCompartidas: (cantidad: number) => void;
   
   // Consideraciones Adicionales
   setTamañoDrives: (value: number) => void;
@@ -148,6 +154,8 @@ const initialState: GoogleMicrosoftState = {
   monitoreoUsuarios: 0,
   informeMigracion: false,
   frecuenciaInforme: "semanal",
+  unidadesCompartidasMigracion: false,
+  sitiosUnidadesCompartidas: 0,
   
   // Consideraciones Adicionales
   tamañoDrives: 0,
@@ -197,6 +205,8 @@ export const useGoogleMicrosoftStore = create<
   setMonitoreoUsuarios: (monitoreoUsuarios) => set({ monitoreoUsuarios }),
   setInformeMigracion: (informeMigracion) => set({ informeMigracion }),
   setFrecuenciaInforme: (frecuenciaInforme) => set({ frecuenciaInforme }),
+  setUnidadesCompartidasMigracion: (unidadesCompartidasMigracion) => set({ unidadesCompartidasMigracion }),
+  setSitiosUnidadesCompartidas: (sitiosUnidadesCompartidas) => set({ sitiosUnidadesCompartidas }),
   
   // Consideraciones Adicionales
   setTamañoDrives: (tamañoDrives) => set({ tamañoDrives }),

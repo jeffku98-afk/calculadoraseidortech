@@ -277,6 +277,41 @@ export function calcularTiempoGoogleMicrosoft(
     });
   }
 
+  // 15. UNIDADES COMPARTIDAS - MIGRACIÓN
+  if (state.unidadesCompartidasMigracion) {
+    // 15a. Configuraciones, Validaciones y Ejecución: fijo 18 horas
+    totalMinutos += 1080;
+    desglose.push({
+      concepto: "Unidades Compartidas - Configuraciones, Validaciones y Ejecución",
+      tiempo: "18 horas",
+      detalle: "Configuración, validación y ejecución de migración de unidades compartidas",
+    });
+
+    // 15b. Monitoreo: 15 min por sitio
+    if (state.sitiosUnidadesCompartidas > 0) {
+      const minutosMonitoreoUC = state.sitiosUnidadesCompartidas * 15;
+      totalMinutos += minutosMonitoreoUC;
+      const h = Math.floor(minutosMonitoreoUC / 60);
+      const m = minutosMonitoreoUC % 60;
+      const tiempoTexto = h > 0
+        ? `${h} ${h === 1 ? "hora" : "horas"}${m > 0 ? ` ${m} min` : ""}`
+        : `${m} min`;
+      desglose.push({
+        concepto: "Unidades Compartidas - Monitoreo",
+        tiempo: tiempoTexto,
+        detalle: `${state.sitiosUnidadesCompartidas} ${state.sitiosUnidadesCompartidas === 1 ? "sitio" : "sitios"} (15 min c/u)`,
+      });
+    }
+
+    // 15c. Validación post-migración: fijo 2 horas
+    totalMinutos += 120;
+    desglose.push({
+      concepto: "Unidades Compartidas - Validación post-migración",
+      tiempo: "2 horas",
+      detalle: "Validación de integridad y acceso de unidades compartidas migradas",
+    });
+  }
+
   // CONSIDERACIONES ADICIONALES (NO SUMAN TIEMPO)
   
   // DRIVE

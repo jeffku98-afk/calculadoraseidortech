@@ -6,6 +6,7 @@ import {
   CardHeader,
   Input,
   Switch,
+  Chip,
   RadioGroup,
   Radio,
   Button,
@@ -649,6 +650,143 @@ export function GoogleMicrosoftPage() {
                     <Radio value="semanal">Semanal</Radio>
                     <Radio value="mensual">Mensual</Radio>
                   </RadioGroup>
+                </div>
+              )}
+            </CardBody>
+          </Card>
+
+          {/* UNIDADES COMPARTIDAS */}
+          <Card>
+            <CardHeader className="bg-gradient-to-r from-seidor-400 to-seidor-300 text-white">
+              <div>
+                <h2 className="text-xl font-bold">Unidades Compartidas</h2>
+                <p className="text-sm opacity-90">
+                  Migración de unidades compartidas de Google Drive a SharePoint
+                </p>
+              </div>
+            </CardHeader>
+            <CardBody className="p-6 space-y-5">
+              {/* Switch activar sección */}
+              <Switch
+                isSelected={state.unidadesCompartidasMigracion}
+                onValueChange={(val) => {
+                  state.setUnidadesCompartidasMigracion(val);
+                  if (!val) state.setSitiosUnidadesCompartidas(0);
+                }}
+              >
+                <div>
+                  <p className="font-semibold text-seidor-400">
+                    Incluir migración de unidades compartidas
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Activa esta sección para agregar el tiempo de migración
+                  </p>
+                </div>
+              </Switch>
+
+              {state.unidadesCompartidasMigracion && (
+                <div className="space-y-4 pt-2 border-t border-gray-100">
+
+                  {/* 1. Configuraciones, Validaciones y Ejecución — fijo */}
+                  <div className="flex items-start justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-800 text-sm">
+                        Configuraciones, Validaciones y Ejecución de migración
+                      </p>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        Tiempo fijo
+                      </p>
+                    </div>
+                    <Chip
+                      size="sm"
+                      variant="flat"
+                      className="ml-3 bg-seidor-50 text-seidor-400 font-semibold shrink-0"
+                    >
+                      18 horas
+                    </Chip>
+                  </div>
+
+                  {/* 2. Monitoreo — 15 min por sitio */}
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-800 text-sm">
+                          Monitoreo
+                        </p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          15 minutos por sitio
+                        </p>
+                      </div>
+                      <Chip
+                        size="sm"
+                        variant="flat"
+                        className="ml-3 bg-seidor-50 text-seidor-400 font-semibold shrink-0"
+                      >
+                        15 min/sitio
+                      </Chip>
+                    </div>
+                    <Input
+                      type="number"
+                      label="Cantidad de sitios a monitorear"
+                      placeholder="Ej: 8"
+                      value={state.sitiosUnidadesCompartidas.toString()}
+                      onValueChange={(value) =>
+                        state.setSitiosUnidadesCompartidas(parseInt(value) || 0)
+                      }
+                      min={0}
+                      className="max-w-xs"
+                      endContent={
+                        <span className="text-gray-500 text-sm">sitios</span>
+                      }
+                      description={
+                        state.sitiosUnidadesCompartidas > 0
+                          ? `${state.sitiosUnidadesCompartidas} sitios × 15 min = ${(() => {
+                              const total = state.sitiosUnidadesCompartidas * 15;
+                              const h = Math.floor(total / 60);
+                              const m = total % 60;
+                              return h > 0 ? `${h}h ${m > 0 ? `${m}min` : ""}`.trim() : `${m} min`;
+                            })()}`
+                          : ""
+                      }
+                    />
+                  </div>
+
+                  {/* 3. Validación post-migración — fijo */}
+                  <div className="flex items-start justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-800 text-sm">
+                        Validación post-migración
+                      </p>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        Tiempo fijo
+                      </p>
+                    </div>
+                    <Chip
+                      size="sm"
+                      variant="flat"
+                      className="ml-3 bg-seidor-50 text-seidor-400 font-semibold shrink-0"
+                    >
+                      2 horas
+                    </Chip>
+                  </div>
+
+                  {/* Resumen de la sección */}
+                  {(() => {
+                    const minSitios = state.sitiosUnidadesCompartidas * 15;
+                    const totalMin = 1080 + minSitios + 120; // 18h + monitoreo + 2h
+                    const h = Math.floor(totalMin / 60);
+                    const m = totalMin % 60;
+                    return (
+                      <div className="p-3 bg-seidor-50 border border-seidor-100 rounded-lg flex justify-between items-center">
+                        <span className="text-sm font-semibold text-seidor-400">
+                          Total Unidades Compartidas:
+                        </span>
+                        <span className="text-sm font-bold text-seidor-400">
+                          {m > 0 ? `${h} horas ${m} min` : `${h} horas`}
+                        </span>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
             </CardBody>
